@@ -1,0 +1,14 @@
+name: 'Setup TFLint'
+description: 'Install and setup TFLint executable'
+author: 'Labyrinth Labs'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
+inputs:
+  tflint_version:
+    description: TFLint version to install
+    required: false
+    default: 'v0.16.2'
+branding:
+  icon: play-circle
+  color: blue
