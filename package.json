@@ -27,7 +27,8 @@
   "homepage": "https://github.com/lablabs/setup-tflint-action#readme",
   "dependencies": {
     "@actions/core": "^1.2.4",
-    "@actions/tool-cache": "^1.0.1"
+    "@actions/tool-cache": "^1.0.1",
+    "@octokit/rest": "^18.0.2"
   },
   "devDependencies": {
     "@zeit/ncc": "^0.22.3",

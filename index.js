@@ -5,12 +5,13 @@ const process = require('process')
 
 const core = require('@actions/core')
 const tc = require('@actions/tool-cache')
+const { Octokit } = require('@octokit/rest')
 
 
 async function run() {
   if (isSupportedPlatform(process.platform)) {
-    const version = getTfLintVersion()
-    const url = getDownloadUrl(getTfLintVersion(), process.platform)
+    const version = await getTfLintVersion()
+    const url = getDownloadUrl(version, process.platform)
 
     core.debug(`Downloading TFlint version [${version}] for platform [${process.platform}] from [${url}`)
     const tflintPath = await tc.downloadTool(url)
@@ -47,8 +48,30 @@ function isWindows() {
   return process.platform == 'win32'
 }
 
-function getTfLintVersion() {
-  return core.getInput('tflint_version');
+function getOctokit() {
+  const options = {}
+  const token = core.getInput("token")
+  if (token) {
+    core.debug("Using tokne authentication for Octokit")
+    options.auth = token
+  }
+  return new Octokit(options)
+}
+
+async function getTfLintVersion() {
+  const inputVersion = core.getInput('tflint_version', {required: true})
+  if (inputVersion == "latest") {
+    core.debug("Requesting for [latest] version ...")
+    const octokit = getOctokit()
+    const response = await octokit.repos.getLatestRelease({
+      owner: 'terraform-linters',
+      repo: 'tflint'
+    })
+    core.debug(`... version resolved to [${response.data.name}]`)
+    return response.data.name
+  } else {
+    return inputVersion
+  }
 }
 
 function getDownloadUrl(version, platform) {

@@ -8,7 +8,10 @@ inputs:
   tflint_version:
     description: TFLint version to install
     required: false
-    default: 'v0.16.2'
+    default: latest
+  token:
+    description: GitHub token
+    required: false
 branding:
   icon: play-circle
   color: blue
