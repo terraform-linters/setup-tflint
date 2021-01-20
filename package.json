@@ -1,12 +1,12 @@
 {
   "name": "setup-tflint-action",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Install and setup TFLint executable Action",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint --fix .",
+    "lint": "eslint --fix . src test",
     "build": "ncc build index.js -o dist --no-source-map-register",
-    "test": "jest",
+    "test": "jest test",
     "prepublishOnly": "pinst --disable",
     "postinstall": "husky install",
     "postpublish": "pinst --enable"

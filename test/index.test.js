@@ -3,7 +3,7 @@ const fs = require('fs');
 const core = require('@actions/core');
 const tc = require('@actions/tool-cache');
 
-const setup = require('./index');
+const setup = require('../src/setup-tflint');
 
 jest.mock('@actions/core');
 jest.mock('@actions/tool-cache');
