@@ -1,38 +1,37 @@
-const core = require('@actions/core')
-const tc = require('@actions/tool-cache')
+const fs = require('fs');
 
-const fs = require('fs')
+const core = require('@actions/core');
+const tc = require('@actions/tool-cache');
 
-const index = require('./index')
+const setup = require('./index');
 
-jest.mock('@actions/core')
-jest.mock('@actions/tool-cache')
-fs.chmodSync = jest.fn()
+jest.mock('@actions/core');
+jest.mock('@actions/tool-cache');
+fs.chmodSync = jest.fn();
 
-tc.downloadTool.mockResolvedValue("tflint_linux_amd64.zip")
-tc.extractZip.mockResolvedValue("tflint")
-fs.chmodSync.mockReturnValue(null)
+tc.downloadTool.mockResolvedValue('tflint_linux_amd64.zip');
+tc.extractZip.mockResolvedValue('tflint');
+fs.chmodSync.mockReturnValue(null);
 
 describe('Mock tests', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
-  })
+    jest.clearAllMocks();
+  });
 
   test('download should be called', async () => {
-    await index.run()
+    await setup();
 
-    expect(tc.downloadTool).toBeCalledTimes(1)
-  })
+    expect(tc.downloadTool).toBeCalledTimes(1);
+  });
 
   test('extract zip should be called', async () => {
-    await index.run()
-    expect(tc.extractZip).toBeCalledTimes(1)
-  })
+    await setup();
+    expect(tc.extractZip).toBeCalledTimes(1);
+  });
 
   test('add path should be called', async () => {
-    await index.run()
+    await setup();
 
-    expect(core.addPath).toBeCalledTimes(1)
-  })
-})
-
+    expect(core.addPath).toBeCalledTimes(1);
+  });
+});

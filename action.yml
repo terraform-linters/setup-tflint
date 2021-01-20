@@ -1,17 +1,17 @@
 name: 'Setup TFLint'
-description: 'Install and setup TFLint executable'
-author: 'Labyrinth Labs'
-runs:
-  using: 'node12'
-  main: 'dist/index.js'
+description: 'Sets up tflint CLI in your GitHub Actions workflow'
+author: 'jgeurts'
 inputs:
   tflint_version:
     description: TFLint version to install
     required: false
     default: latest
-  token:
-    description: GitHub token
+  github_token:
+    description: GitHub token - used when getting the latest version of tflint
     required: false
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
 branding:
-  icon: play-circle
-  color: blue
+  icon: 'terminal'
+  color: 'purple'
