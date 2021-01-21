@@ -21,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jgeurts/setup-tflint-action.git"
+    "url": "git+https://github.com/lablabs/setup-tflint-action.git"
   },
   "keywords": [
     "GitHub",
@@ -29,9 +29,12 @@
     "TFLint",
     "Terraform"
   ],
-  "author": "jgeurts",
+  "author": "Labyrinth Labs",
   "license": "MIT",
-  "homepage": "https://github.com/jgeurts/setup-tflint-action#readme",
+  "bugs": {
+    "url": "https://github.com/lablabs/setup-tflint-action/issues"
+  },
+  "homepage": "https://github.com/lablabs/setup-tflint-action#readme",
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/tool-cache": "^1.6.1",
