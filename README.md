@@ -68,3 +68,11 @@ For authenticating with the [GITHUB_TOKEN](https://docs.github.com/en/actions/co
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
 ```
+
+## Releasing
+
+To create a new version:
+
+```sh
+npm version $inc && git push --follow-tags
+```
