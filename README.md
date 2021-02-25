@@ -41,7 +41,7 @@ jobs:
     - uses: actions/checkout@v1
       name: Checkout source code
 
-    - uses: lablabs/setup-tflint@v1
+    - uses: terraform-linters/setup-tflint@v1
       name: Setup TFLint
       with:
         tflint_version: v0.18.0
@@ -53,18 +53,18 @@ jobs:
 
 For latest release you can omit version variable and use
 ```yaml
-- uses: lablabs/setup-tflint@v1
+- uses: terraform-linters/setup-tflint@v1
 ```
 or specify it explicitly as
 ```yaml
-- uses: lablabs/setup-tflint@v1
+- uses: terraform-linters/setup-tflint@v1
   with:
     tflint_version: latest
 ```
 
 For authenticating with the [GITHUB_TOKEN](https://docs.github.com/en/actions/configuring-and-managing-workflows/authenticating-with-the-github_token) you can use
 ```yaml
-- uses: lablabs/setup-tflint@v1
+- uses: terraform-linters/setup-tflint@v1
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
 ```
