@@ -13,9 +13,9 @@ If version is `"latest"`, the action will get the latest version number using [O
 
 Default: `"latest"`
 
-### `token`
+### `github_token`
 
-If set, token will be used for Octokit authentication. Authenticating will increase the [API rate limit](https://developer.github.com/v3/#rate-limiting).
+If set, `github_token` will be used for Octokit authentication. Authenticating will increase the [API rate limit](https://developer.github.com/v3/#rate-limiting) when querying the tflint repository to get the latest release version.
 
 ## Outputs
 
@@ -66,7 +66,7 @@ For authenticating with the [GITHUB_TOKEN](https://docs.github.com/en/actions/co
 ```yaml
 - uses: terraform-linters/setup-tflint@v1
   with:
-    token: ${{ secrets.GITHUB_TOKEN }}
+    github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Releasing
