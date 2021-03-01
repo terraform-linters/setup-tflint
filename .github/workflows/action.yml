@@ -31,8 +31,8 @@ jobs:
       with:
         tflint_version: ${{ matrix.tflint_version }}
     - name: Validate
-      if: ${{ matrix.tflint_version }} != 'latest' }}
+      if: matrix.tflint_version != 'latest'
       run: tflint -v | grep ${{ matrix.tflint_version }}
     - name: Validate
-      if: ${{ matrix.tflint_version == 'latest' }}
+      if: matrix.tflint_version == 'latest'
       run: tflint -v
