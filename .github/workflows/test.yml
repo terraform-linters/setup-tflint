@@ -1,15 +1,28 @@
-name: 'Setup TFLint'
+name: Test
 
 on:
   push:
     branches:
-    - master
+      - master
   pull_request:
 
 jobs:
-  default:
-    name: default
+  unit:
+    name: Unit tests
     runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+    - name: Install
+      run: npm ci
+    - name: Test
+      run: npm test
+  
+  integration:
+    name: Integration test
+    runs-on: ubuntu-latest
+    
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -17,12 +30,14 @@ jobs:
       uses: ./
     - name: Validate
       run: tflint -v
-  versions:
-    name: tflint_version (${{ matrix.tflint_version }})
+  
+  integration-versions:
+    name: 'Integration test (tflint_version: ${{ matrix.tflint_version }})'
     runs-on: ubuntu-latest
     strategy:
       matrix:
         tflint_version: ['v0.24.1', latest]
+    
     steps:
     - name: Checkout
       uses: actions/checkout@v2
