@@ -1,4 +1,5 @@
 const os = require('os');
+const path = require('path');
 
 const core = require('@actions/core');
 const tc = require('@actions/tool-cache');
@@ -83,6 +84,9 @@ async function run() {
     const pathToCLI = await downloadCLI(url);
 
     core.addPath(pathToCLI);
+
+    const matchersPath = path.join(__dirname, '..', '.github');
+    core.info(`##[add-matcher]${path.join(matchersPath, 'matchers.json')}`);
 
     return version;
   } catch (ex) {

@@ -59,3 +59,20 @@ jobs:
     - name: Validate
       if: matrix.tflint_version == 'latest'
       run: tflint -v
+
+  integration-matchers:
+    name: 'Integration test (tflint_version: ${{ matrix.tflint_version }})'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        tflint_version: ['v0.26.0', latest]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Use Action
+      uses: ./
+      with:
+        tflint_version: ${{ matrix.tflint_version }}
+    - name: Run
+      run: tflint -f compact --force
