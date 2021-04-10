@@ -7,6 +7,24 @@ on:
   pull_request:
 
 jobs:
+  build:
+    name: Build checks
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+    - uses: actions/cache@v2
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - name: Install
+      run: npm ci
+    - name: Build & Verify
+      run: npm run build && git diff --exit-code
+
   unit:
     name: Unit tests
     runs-on: ubuntu-latest
