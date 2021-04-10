@@ -9290,6 +9290,7 @@ function wrappy (fn, cb) {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const os = __nccwpck_require__(2087);
+const path = __nccwpck_require__(5622);
 
 const core = __nccwpck_require__(2186);
 const tc = __nccwpck_require__(7784);
@@ -9374,6 +9375,9 @@ async function run() {
     const pathToCLI = await downloadCLI(url);
 
     core.addPath(pathToCLI);
+
+    const matchersPath = __nccwpck_require__.ab + ".github";
+    core.info(`##[add-matcher]${path.join(matchersPath, 'matchers.json')}`);
 
     return version;
   } catch (ex) {

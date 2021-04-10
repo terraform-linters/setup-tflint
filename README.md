@@ -24,31 +24,34 @@ The action does not have any output.
 ## Usage
 
 ```yaml
-name: Test
+name: Lint
 on:
   push:
     branches: [ master ]
+  pull_request:
 
 jobs:
-  example-job:
-  runs-on: ${{ matrix.os }}
+  tflint:
+    runs-on: ${{ matrix.os }}
 
-  strategy:
-    matrix:
-      os: [ubuntu-latest, macos-latest, windows-latest]
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
 
-  steps:
+    steps:
     - uses: actions/checkout@v1
       name: Checkout source code
 
     - uses: terraform-linters/setup-tflint@v1
       name: Setup TFLint
       with:
-        tflint_version: v0.18.0
+        tflint_version: v0.26.0
 
-    - shell: bash
-      run: |
-        tflint --version
+    - name: Show version
+      run: tflint --version
+
+    - name: Run TFLint
+      run: tflint -f compact
 ```
 
 For latest release you can omit version variable and use
@@ -68,6 +71,12 @@ For authenticating with the [GITHUB_TOKEN](https://docs.github.com/en/actions/co
   with:
     github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
+
+### Checks
+
+This action supports [Problem Matchers](https://github.com/actions/toolkit/blob/main/docs/problem-matchers.md) for `--format compact`. You can see annotations in pull requests when TFLint prints issues with the `compact` format.
+
+![annotations](annotations.png)
 
 ## Releasing
 
