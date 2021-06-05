@@ -39,16 +39,19 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
       name: Checkout source code
 
     - uses: terraform-linters/setup-tflint@v1
       name: Setup TFLint
       with:
-        tflint_version: v0.26.0
+        tflint_version: v0.29.0
 
     - name: Show version
       run: tflint --version
+
+    - name: Init TFLint
+      run: tflint --init
 
     - name: Run TFLint
       run: tflint -f compact
