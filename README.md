@@ -42,6 +42,12 @@ jobs:
     - uses: actions/checkout@v2
       name: Checkout source code
 
+    - uses: actions/cache@v2
+      name: Cache plugin dir
+      with:
+        path: ~/.tflint.d/plugins
+        key: ${{ matrix.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
+
     - uses: terraform-linters/setup-tflint@v1
       name: Setup TFLint
       with:
