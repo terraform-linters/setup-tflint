@@ -63,7 +63,8 @@ jobs:
       run: tflint -f compact
 ```
 
-For latest release you can omit version variable and use
+### Latest Release
+
 ```yaml
 - uses: terraform-linters/setup-tflint@v1
 ```
@@ -74,11 +75,22 @@ or specify it explicitly as
     tflint_version: latest
 ```
 
-For authenticating with the [GITHUB_TOKEN](https://docs.github.com/en/actions/configuring-and-managing-workflows/authenticating-with-the-github_token) you can use
+### Using `GITHUB_TOKEN`
+
 ```yaml
 - uses: terraform-linters/setup-tflint@v1
   with:
     github_token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+### Loading Shared Configuration
+
+```yaml
+- uses: terraform-linters/setup-tflint@v1
+- uses: terraform-linters/tflint-load-config-action@v0
+  with:
+    source-repo: me/tflint-config
+- run: tflint -f compact
 ```
 
 ### Checks
