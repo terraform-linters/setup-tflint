@@ -1,5 +1,6 @@
 const os = require('os');
 const path = require('path');
+const process = require('process');
 
 const core = require('@actions/core');
 const tc = require('@actions/tool-cache');
@@ -85,7 +86,7 @@ async function run() {
 
     core.addPath(pathToCLI);
 
-    const matchersPath = path.join(__dirname, '..', '.github');
+    const matchersPath = path.join(String(process.env.GITHUB_WORKSPACE), '.github');
     core.info(`##[add-matcher]${path.join(matchersPath, 'matchers.json')}`);
 
     return version;
