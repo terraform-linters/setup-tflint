@@ -1,6 +1,6 @@
-name: 'Setup TFLint'
+name: 'Setup TFLint test'
 description: 'Sets up tflint CLI in your GitHub Actions workflow'
-author: 'jgeurts'
+author: 'bnayah'
 inputs:
   tflint_version:
     description: TFLint version to install
