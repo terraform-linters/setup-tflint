@@ -9376,8 +9376,8 @@ async function run() {
 
     core.addPath(pathToCLI);
 
-    const matchersPath = __nccwpck_require__.ab + ".github";
-    core.info(`##[add-matcher]${path.join(matchersPath, 'matchers.json')}`);
+    const matchersPath = __nccwpck_require__.ab + "matchers.json";
+    core.info(`##[add-matcher]${matchersPath}`);
 
     return version;
   } catch (ex) {
