@@ -40,7 +40,7 @@
     "@octokit/rest": "^18.0.12"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.27.0",
+    "@vercel/ncc": "^0.33.3",
     "eslint": "^7.18.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^7.2.0",
