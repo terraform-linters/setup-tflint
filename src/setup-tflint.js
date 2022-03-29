@@ -85,8 +85,8 @@ async function run() {
 
     core.addPath(pathToCLI);
 
-    const matchersPath = path.join(__dirname, '..', '.github');
-    core.info(`##[add-matcher]${path.join(matchersPath, 'matchers.json')}`);
+    const matchersPath = path.join(__dirname, '..', '.github', 'matchers.json');
+    core.info(`##[add-matcher]${matchersPath}`);
 
     return version;
   } catch (ex) {
