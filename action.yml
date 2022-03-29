@@ -10,7 +10,7 @@ inputs:
     description: GitHub token - used when getting the latest version of tflint
     required: false
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'
 branding:
   icon: 'terminal'
