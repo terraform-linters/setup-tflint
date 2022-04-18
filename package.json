@@ -52,7 +52,7 @@
     "eslint-plugin-security": "^1.4.0",
     "husky": "^5.0.6",
     "jest": "^27.5.1",
-    "lint-staged": "^12.3.7",
+    "lint-staged": "^12.3.8",
     "pinst": "^3.0.0",
     "prettier": "^2.6.2"
   }
