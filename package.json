@@ -36,7 +36,7 @@
   "homepage": "https://github.com/terraform-linters/setup-tflint-action#readme",
   "dependencies": {
     "@actions/core": "^1.8.0",
-    "@actions/tool-cache": "^1.7.2",
+    "@actions/tool-cache": "^2.0.1",
     "@octokit/rest": "^18.12.0"
   },
   "devDependencies": {
