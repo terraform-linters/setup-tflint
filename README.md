@@ -48,10 +48,10 @@ jobs:
         path: ~/.tflint.d/plugins
         key: ${{ matrix.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
 
-    - uses: terraform-linters/setup-tflint@v1
+    - uses: terraform-linters/setup-tflint@v2
       name: Setup TFLint
       with:
-        tflint_version: v0.29.0
+        tflint_version: v0.38.1
 
     - name: Show version
       run: tflint --version
@@ -66,11 +66,11 @@ jobs:
 ### Latest Release
 
 ```yaml
-- uses: terraform-linters/setup-tflint@v1
+- uses: terraform-linters/setup-tflint@v2
 ```
 or specify it explicitly as
 ```yaml
-- uses: terraform-linters/setup-tflint@v1
+- uses: terraform-linters/setup-tflint@v2
   with:
     tflint_version: latest
 ```
@@ -78,7 +78,7 @@ or specify it explicitly as
 ### Using `GITHUB_TOKEN`
 
 ```yaml
-- uses: terraform-linters/setup-tflint@v1
+- uses: terraform-linters/setup-tflint@v2
   with:
     github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -86,7 +86,7 @@ or specify it explicitly as
 ### Loading Shared Configuration
 
 ```yaml
-- uses: terraform-linters/setup-tflint@v1
+- uses: terraform-linters/setup-tflint@v2
 - uses: terraform-linters/tflint-load-config-action@v0
   with:
     source-repo: me/tflint-config
