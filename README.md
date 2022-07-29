@@ -15,7 +15,9 @@ Default: `"latest"`
 
 ### `github_token`
 
-If set, `github_token` will be used for Octokit authentication. Authenticating will increase the [API rate limit](https://developer.github.com/v3/#rate-limiting) when querying the tflint repository to get the latest release version.
+Used to authenticate requests to the GitHub API to obtain release data from the TFLint repository. Authenticating will increase the [API rate limit](https://developer.github.com/v3/#rate-limiting). Any valid token is supported. No permissions are required.
+
+Default: `${{ github.token }}
 
 ## Outputs
 
@@ -75,12 +77,12 @@ or specify it explicitly as
     tflint_version: latest
 ```
 
-### Using `GITHUB_TOKEN`
+### Using Custom GitHub Token
 
 ```yaml
 - uses: terraform-linters/setup-tflint@v2
   with:
-    github_token: ${{ secrets.GITHUB_TOKEN }}
+    github_token: ${{ secrets.MY_CUSTOM_GITHUB_TOKEN }}
 ```
 
 ### Loading Shared Configuration
