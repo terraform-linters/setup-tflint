@@ -17,7 +17,7 @@ Default: `"latest"`
 
 Used to authenticate requests to the GitHub API to obtain release data from the TFLint repository. Authenticating will increase the [API rate limit](https://developer.github.com/v3/#rate-limiting). Any valid token is supported. No permissions are required.
 
-Default: `${{ github.token }}
+Default: `${{ github.token }}`
 
 ## Outputs
 
