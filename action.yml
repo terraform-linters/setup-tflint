@@ -8,6 +8,7 @@ inputs:
   github_token:
     description: GitHub token - used when getting the latest version of tflint
     required: false
+    default: ${{ github.token }}
 runs:
   using: 'node16'
   main: 'dist/index.js'
