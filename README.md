@@ -41,19 +41,19 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       name: Checkout source code
 
-    - uses: actions/cache@v2
+    - uses: actions/cache@v3
       name: Cache plugin dir
       with:
         path: ~/.tflint.d/plugins
         key: ${{ matrix.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
 
-    - uses: terraform-linters/setup-tflint@v2
+    - uses: terraform-linters/setup-tflint@v3
       name: Setup TFLint
       with:
-        tflint_version: v0.38.1
+        tflint_version: v0.44.1
 
     - name: Show version
       run: tflint --version
@@ -68,11 +68,11 @@ jobs:
 ### Latest Release
 
 ```yaml
-- uses: terraform-linters/setup-tflint@v2
+- uses: terraform-linters/setup-tflint@v3
 ```
 or specify it explicitly as
 ```yaml
-- uses: terraform-linters/setup-tflint@v2
+- uses: terraform-linters/setup-tflint@v3
   with:
     tflint_version: latest
 ```
@@ -80,7 +80,7 @@ or specify it explicitly as
 ### Using Custom GitHub Token
 
 ```yaml
-- uses: terraform-linters/setup-tflint@v2
+- uses: terraform-linters/setup-tflint@v3
   with:
     github_token: ${{ secrets.MY_CUSTOM_GITHUB_TOKEN }}
 ```
@@ -88,8 +88,8 @@ or specify it explicitly as
 ### Loading Shared Configuration
 
 ```yaml
-- uses: terraform-linters/setup-tflint@v2
-- uses: terraform-linters/tflint-load-config-action@v0
+- uses: terraform-linters/setup-tflint@v3
+- uses: terraform-linters/tflint-load-config-action@v1
   with:
     source-repo: me/tflint-config
 - run: tflint -f compact
