@@ -60,6 +60,9 @@ jobs:
 
     - name: Init TFLint
       run: tflint --init
+      env:
+        # https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/plugins.md#avoiding-rate-limiting
+        GITHUB_TOKEN: ${{ github.token }}
 
     - name: Run TFLint
       run: tflint -f compact
