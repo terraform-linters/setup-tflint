@@ -13006,6 +13006,7 @@ const path = __nccwpck_require__(1017);
 
 const core = __nccwpck_require__(2186);
 const tc = __nccwpck_require__(7784);
+const io = __nccwpck_require__(7436);
 const { Octokit } = __nccwpck_require__(5375);
 
 /**
@@ -13063,8 +13064,18 @@ async function downloadCLI(url) {
   core.debug(`Downloading tflint CLI from ${url}`);
   const pathToCLIZip = await tc.downloadTool(url);
 
+  // Workaround for https://github.com/actions/toolkit/issues/1287
+  var actualPathToCLIZip
+  if (os.platform() == "win32") {
+    core.debug (`Detected Windows runner, adding zip extension`);
+    actualPathToCLIZip = `${pathToCLIZip}.zip`
+    await io.mv(pathToCLIZip,actualPathToCLIZip);
+  } else {
+    actualPathToCLIZip = pathToCLIZip
+  }
+
   core.debug('Extracting tflint CLI zip file');
-  const pathToCLI = await tc.extractZip(pathToCLIZip);
+  const pathToCLI = await tc.extractZip(actualPathToCLIZip);
   core.debug(`tflint CLI path is ${pathToCLI}.`);
 
   if (!pathToCLIZip || !pathToCLI) {
