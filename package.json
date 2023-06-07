@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint --fix . src test",
-    "build": "ncc build index.js -o dist --no-source-map-register",
+    "build": "ncc build wrapper/tflint.js --out wrapper/dist && ncc build index.js -o dist --no-source-map-register",
     "test": "jest test"
   },
   "lint-staged": {
