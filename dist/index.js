@@ -13149,7 +13149,7 @@ async function installWrapper(pathToCLI) {
 async function run() {
   try {
     const inputVersion = core.getInput('tflint_version');
-    const wrapper = core.getInput('tflint_wrapper') === 'true';
+    const wrapper = core.getInput('tflint_wrapper_enabled') === 'true';
     const version = await getTFLintVersion(inputVersion);
     const platform = mapOS(os.platform());
     const arch = mapArch(os.arch());

@@ -5,8 +5,11 @@ const tc = require('@actions/tool-cache');
 
 const setup = require('../src/setup-tflint');
 
+const process = require('process');
+
 jest.mock('@actions/core');
 jest.mock('@actions/tool-cache');
+jest.mock('os');
 fs.chmodSync = jest.fn();
 
 tc.downloadTool.mockResolvedValue('tflint_linux_amd64.zip');
@@ -29,9 +32,15 @@ describe('Mock tests', () => {
     expect(tc.extractZip).toBeCalledTimes(1);
   });
 
-  test('add path should be called', async () => {
+  test('install wrapper should be called', async () => {
+    // process.env.INPUT_TFLINT_WRAPPER_ENABLED = 'true';
+
+    const core = {
+      getInput: jest.fn().mockReturnValueOnce('tflint_wrapper_enabled')
+    };
+
     await setup();
 
-    expect(core.addPath).toBeCalledTimes(1);
+    expect(core.exportVariable).toBeCalledTimes(1);
   });
 });
