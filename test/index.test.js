@@ -1,11 +1,10 @@
 const fs = require('fs');
+const process = require('process');
 
 const core = require('@actions/core');
 const tc = require('@actions/tool-cache');
 
 const setup = require('../src/setup-tflint');
-
-const process = require('process');
 
 jest.mock('@actions/core');
 jest.mock('@actions/tool-cache');
@@ -33,11 +32,7 @@ describe('Mock tests', () => {
   });
 
   test('install wrapper should be called', async () => {
-    // process.env.INPUT_TFLINT_WRAPPER_ENABLED = 'true';
-
-    const core = {
-      getInput: jest.fn().mockReturnValueOnce('tflint_wrapper_enabled')
-    };
+    process.env.INPUT_TFLINT_WRAPPER_ENABLED = 'true';
 
     await setup();
 
