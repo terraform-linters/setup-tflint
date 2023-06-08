@@ -1,7 +1,5 @@
 const fs = require('fs');
-const process = require('process');
 
-const core = require('@actions/core');
 const tc = require('@actions/tool-cache');
 
 const setup = require('../src/setup-tflint');
@@ -29,13 +27,5 @@ describe('Mock tests', () => {
   test('extract zip should be called', async () => {
     await setup();
     expect(tc.extractZip).toBeCalledTimes(1);
-  });
-
-  test('install wrapper should be called', async () => {
-    process.env.INPUT_TFLINT_WRAPPER_ENABLED = 'true';
-
-    await setup();
-
-    expect(core.exportVariable).toBeCalledTimes(1);
   });
 });

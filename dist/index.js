@@ -13042,6 +13042,7 @@ function wrappy (fn, cb) {
 /***/ 7303:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+const fs = __nccwpck_require__(7147);
 const os = __nccwpck_require__(2037);
 const path = __nccwpck_require__(1017);
 
@@ -13049,6 +13050,7 @@ const core = __nccwpck_require__(2186);
 const io = __nccwpck_require__(7436);
 const tc = __nccwpck_require__(7784);
 const { Octokit } = __nccwpck_require__(5375);
+
 
 /**
  * Get the GitHub platform architecture name
@@ -13119,6 +13121,10 @@ async function downloadCLI(url) {
 async function installWrapper(pathToCLI) {
   let source;
   let target;
+
+  const files = fs.readdirSync(pathToCLI);
+
+  core.debug(files.toString());
 
   // Rename tflint to tflint-bin
   try {

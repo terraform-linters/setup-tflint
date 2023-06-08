@@ -1,3 +1,4 @@
+const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
@@ -5,6 +6,7 @@ const core = require('@actions/core');
 const io = require('@actions/io');
 const tc = require('@actions/tool-cache');
 const { Octokit } = require('@octokit/rest');
+
 
 /**
  * Get the GitHub platform architecture name
@@ -75,6 +77,10 @@ async function downloadCLI(url) {
 async function installWrapper(pathToCLI) {
   let source;
   let target;
+
+  const files = fs.readdirSync(pathToCLI);
+
+  core.debug(files.toString());
 
   // Rename tflint to tflint-bin
   try {
