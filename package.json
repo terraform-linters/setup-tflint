@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint --fix . src test",
-    "build": "ncc build index.js -o dist --no-source-map-register",
+    "build": "ncc build wrapper/tflint.js --out wrapper/dist && ncc build index.js -o dist --no-source-map-register",
     "test": "jest test"
   },
   "lint-staged": {
@@ -33,8 +33,11 @@
   "homepage": "https://github.com/terraform-linters/setup-tflint-action#readme",
   "dependencies": {
     "@actions/core": "^1.10.0",
+    "@actions/exec": "^1.1.1",
+    "@actions/io": "^1.1.3",
     "@actions/tool-cache": "^2.0.1",
-    "@octokit/rest": "^19.0.5"
+    "@octokit/rest": "^19.0.5",
+    "process": "^0.11.10"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.36.0",

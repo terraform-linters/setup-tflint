@@ -19,9 +19,20 @@ Used to authenticate requests to the GitHub API to obtain release data from the 
 
 Default: `${{ github.token }}`
 
+### `tflint_wrapper_enabled`
+
+If true, installs a wrapper script to wrap susbsequent calls of the `tflint` binary and expose its STDOUT, STDERR, and exit code as outputs.
+
+Default: `"false"`
+
 ## Outputs
 
-The action does not have any output.
+This action does not configure any outputs directly. However, when you set the `tflint_wrapper_enabled` input
+to `true`, the following outputs are available for subsequent steps that call the `tflint` binary:
+
+- `stdout` - The STDOUT stream of the call to the `tflint` binary.
+- `stderr` - The STDERR stream of the call to the `tflint` binary.
+- `exitcode` - The exit code of the call to the `tflint` binary.
 
 ## Usage
 
@@ -96,6 +107,20 @@ or specify it explicitly as
   with:
     source-repo: me/tflint-config
 - run: tflint -f compact
+```
+
+### Enabling the TFlint Wrapper
+```yaml
+- uses: terraform-linters/setup-tflint@v3
+  with:
+    tflint_wrapper_enabled: true
+
+- id: tflint
+  run: tflint -f compact
+
+- run: echo ${{ steps.tflint.outputs.stdout }}
+- run: echo ${{ steps.tflint.outputs.stderr }}
+- run: echo ${{ steps.tflint.outputs.exitcode }}
 ```
 
 ### Checks

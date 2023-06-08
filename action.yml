@@ -9,6 +9,10 @@ inputs:
     description: GitHub token - used when getting the latest version of tflint
     required: false
     default: ${{ github.token }}
+  tflint_wrapper_enabled:
+    description: 'Whether or not to install a wrapper to wrap subsequent calls of the `tflint` binary and expose its STDOUT, STDERR, and exit code as outputs named `stdout`, `stderr`, and `exitcode` respectively. Defaults to `false`.'
+    default: 'false'
+    required: false
 runs:
   using: 'node16'
   main: 'dist/index.js'
