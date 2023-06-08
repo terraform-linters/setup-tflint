@@ -4161,7 +4161,7 @@ async function checkTflint() {
   }
 
   // A non-zero exitCode is considered an error
-  core.setFailed(`Terraform exited with code ${exitCode}.`);
+  core.setFailed(`TFlint exited with code ${exitCode}.`);
 })();
 
 })();
