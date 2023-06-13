@@ -114,4 +114,13 @@ jobs:
           tflint_version: ${{ matrix.tflint_version }}
           tflint_wrapper: true
       - name: Run
+        id: tflint
         run: tflint -f compact --force
+      - name: Verify Exit Code Output
+        run: |
+          if [[ ${{ steps.tflint.outputs.exitcode }} -ne 0 ]]; then
+            echo "TFLint Exit Code not captured."
+            exit 1
+          else
+            echo "TFLint Exit Code captured."
+          fi

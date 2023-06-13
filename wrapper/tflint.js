@@ -8,9 +8,8 @@ const OutputListener = require('./lib/output-listener');
 const pathToCLI = require('./lib/tflint-bin');
 
 async function checkTflint() {
-  // Setting check to `true` will cause `which` to throw if tflint isn't found
-  const check = true;
-  return io.which(pathToCLI, check);
+  // throws if `which` does not find a result
+  return io.which(pathToCLI, true);
 }
 
 (async () => {
@@ -49,5 +48,5 @@ async function checkTflint() {
   }
 
   // A non-zero exitCode is considered an error
-  core.setFailed(`TFlint exited with code ${exitCode}.`);
+  core.setFailed(`TFLint exited with code ${exitCode}.`);
 })();
