@@ -121,7 +121,6 @@ async function run() {
 
     const pathToCLI = await downloadCLI(url);
 
-    // Install our wrapper
     if (wrapper) {
       await installWrapper(pathToCLI);
     }
