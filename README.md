@@ -27,12 +27,11 @@ Default: `"false"`
 
 ## Outputs
 
-This action does not configure any outputs directly. However, when you set the `tflint_wrapper` input
-to `true`, the following outputs are available for subsequent steps that call the `tflint` binary:
+The following outputs are available when the `tflint_wrapper` input is enabled:
 
-- `stdout` - The STDOUT stream of the call to the `tflint` binary.
-- `stderr` - The STDERR stream of the call to the `tflint` binary.
-- `exitcode` - The exit code of the call to the `tflint` binary.
+- `stdout` - The output (stdout) produced by the tflint command.
+- `stderr` - The error output (stdout) produced by the tflint command.
+- `exitcode` - The exit code produced by the tflint command.
 
 ## Usage
 
