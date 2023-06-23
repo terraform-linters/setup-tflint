@@ -21,7 +21,7 @@ Default: `${{ github.token }}`
 
 ### `tflint_wrapper`
 
-If true, installs a wrapper script to wrap susbsequent calls of the `tflint` binary and expose its STDOUT, STDERR, and exit code as outputs.
+Installs a wrapper script to wrap subsequent calls to `tflint` and expose `stdout`, `stderr`, and `exitcode` outputs.
 
 Default: `"false"`
 

@@ -10,9 +10,10 @@ inputs:
     required: false
     default: ${{ github.token }}
   tflint_wrapper:
-    description: 'Whether or not to install a wrapper to wrap subsequent calls of the `tflint` binary and expose its STDOUT, STDERR, and exit code as outputs named `stdout`, `stderr`, and `exitcode` respectively. Defaults to `false`.'
+    description: Installs a wrapper script to wrap subsequent calls to `tflint` and expose `stdout`, `stderr`, and `exitcode` outputs
     default: 'false'
     required: false
+
 runs:
   using: 'node16'
   main: 'dist/index.js'
