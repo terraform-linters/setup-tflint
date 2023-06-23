@@ -108,7 +108,8 @@ or specify it explicitly as
 - run: tflint -f compact
 ```
 
-### Enabling the TFlint Wrapper
+### Wrapper
+
 ```yaml
 - uses: terraform-linters/setup-tflint@v3
   with:
