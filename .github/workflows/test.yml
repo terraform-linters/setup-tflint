@@ -45,7 +45,7 @@ jobs:
 
   integration:
     name: Integration test
-    
+
     strategy:
       matrix:
         os:
@@ -98,3 +98,29 @@ jobs:
         tflint_version: ${{ matrix.tflint_version }}
     - name: Run
       run: tflint -f compact --force
+
+  integration-wrapper:
+    name: 'Integration test (tflint_version: ${{ matrix.tflint_version }})'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        tflint_version: [ 'v0.26.0', latest ]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Action
+        uses: ./
+        with:
+          tflint_version: ${{ matrix.tflint_version }}
+          tflint_wrapper: true
+      - name: Run
+        id: tflint
+        run: tflint -f compact --force
+      - name: Verify Exit Code Output
+        run: |
+          if [[ ${{ steps.tflint.outputs.exitcode }} -ne 0 ]]; then
+            echo "TFLint Exit Code not captured."
+            exit 1
+          else
+            echo "TFLint Exit Code captured."
+          fi
