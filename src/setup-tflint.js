@@ -1,5 +1,6 @@
 const os = require('os');
 const path = require('path');
+const fetch = require('node-fetch');
 
 const core = require('@actions/core');
 const io = require('@actions/io');
@@ -32,14 +33,10 @@ function mapOS(osPlatform) {
 }
 
 function getOctokit() {
-  const options = {};
-  const token = core.getInput('github_token');
-  if (token) {
-    core.debug('Using token authentication for Octokit');
-    options.auth = token;
-  }
-
-  return new Octokit(options);
+  return new Octokit({
+    auth: core.getInput('github_token'),
+    request: {fetch}
+  });
 }
 
 async function getTFLintVersion(inputVersion) {
