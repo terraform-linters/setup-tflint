@@ -19,6 +19,12 @@ Used to authenticate requests to the GitHub API to obtain release data from the 
 
 Default: `${{ github.token }}`
 
+To disable authentication, set this value to an empty string (`""`). GitHub Enterprise Server tokens will not be accepted by `github.com`. GHES users must either:
+
+* Disable authentication
+* Provide an API token issued from `github.com`
+  * [Apps](https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/about-creating-github-apps) are the preferred way to authenticate on behalf of an organization
+
 ### `tflint_wrapper`
 
 Installs a wrapper script to wrap subsequent calls to `tflint` and expose `stdout`, `stderr`, and `exitcode` outputs.
