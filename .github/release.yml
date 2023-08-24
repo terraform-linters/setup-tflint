@@ -1,0 +1,15 @@
+changelog:
+  categories:
+    - title: What's Changed
+      labels:
+        - '*'
+      exclude:
+        labels:
+          - dependencies
+          - documentation
+    - title: Documentation
+      labels:
+        - documentation
+    - title: Dependencies
+      labels:
+        - dependencies
