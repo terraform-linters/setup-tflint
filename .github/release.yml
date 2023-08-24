@@ -1,6 +1,6 @@
 changelog:
   categories:
-    - title: What's Changed
+    - title: Features
       labels:
         - '*'
       exclude:
