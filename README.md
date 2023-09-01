@@ -17,13 +17,9 @@ Default: `"latest"`
 
 Used to authenticate requests to the GitHub API to obtain release data from the TFLint repository. Authenticating will increase the [API rate limit](https://developer.github.com/v3/#rate-limiting). Any valid token is supported. No permissions are required.
 
-Default: `${{ github.token }}`
+Default: `${{ github.server_url == 'https://github.com' && github.token || '' }}`
 
-To disable authentication, set this value to an empty string (`""`). GitHub Enterprise Server tokens will not be accepted by `github.com`. GHES users must either:
-
-* Disable authentication
-* Provide an API token issued from `github.com`
-  * [Apps](https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/about-creating-github-apps) are the preferred way to authenticate on behalf of an organization
+GitHub Enterprise Server will make requests to github.com anonymously by default. To authenticate these requests, you must issue a token from github.com and pass it explicitly.
 
 ### `tflint_wrapper`
 

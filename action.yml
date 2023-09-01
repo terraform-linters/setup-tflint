@@ -8,7 +8,7 @@ inputs:
   github_token:
     description: GitHub token - used when getting the latest version of tflint
     required: false
-    default: ${{ github.token }}
+    default: ${{ github.server_url == 'https://github.com' && github.token || '' }}
   tflint_wrapper:
     description: Installs a wrapper script to wrap subsequent calls to `tflint` and expose `stdout`, `stderr`, and `exitcode` outputs
     default: 'false'
