@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: actions/setup-node@v3
     - uses: actions/cache@v3
       with:
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: actions/setup-node@v3
     - uses: actions/cache@v3
       with:
@@ -55,7 +55,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Use Action
       uses: ./
     - name: Validate
@@ -69,7 +69,7 @@ jobs:
         tflint_version: ['v0.24.1', latest]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Use Action
       uses: ./
       with:
@@ -91,7 +91,7 @@ jobs:
         tflint_version: ['v0.26.0', latest]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Use Action
       uses: ./
       with:
@@ -107,7 +107,7 @@ jobs:
         tflint_version: [ 'v0.26.0', latest ]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Use Action
         uses: ./
         with:
