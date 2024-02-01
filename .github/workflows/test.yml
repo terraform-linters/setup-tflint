@@ -42,6 +42,8 @@ jobs:
       run: npm ci
     - name: Test
       run: npm test
+      env:
+        INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   integration:
     name: Integration test
@@ -58,6 +60,8 @@ jobs:
     - uses: actions/checkout@v4
     - name: Use Action
       uses: ./
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
     - name: Validate
       run: tflint -v
 
@@ -74,6 +78,7 @@ jobs:
       uses: ./
       with:
         tflint_version: ${{ matrix.tflint_version }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
     - name: Validate
       if: matrix.tflint_version != 'latest'
       run: |-
@@ -96,6 +101,7 @@ jobs:
       uses: ./
       with:
         tflint_version: ${{ matrix.tflint_version }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
     - name: Run
       run: tflint -f compact --force
 
@@ -113,6 +119,7 @@ jobs:
         with:
           tflint_version: ${{ matrix.tflint_version }}
           tflint_wrapper: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run
         id: tflint
         run: tflint -f compact --force
