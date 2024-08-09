@@ -65,7 +65,7 @@ jobs:
     - uses: terraform-linters/setup-tflint@v4
       name: Setup TFLint
       with:
-        tflint_version: v0.50.3
+        tflint_version: v0.52.0
 
     - name: Show version
       run: tflint --version
