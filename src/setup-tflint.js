@@ -124,7 +124,7 @@ async function installWrapper(pathToCLI) {
 async function run() {
   try {
     const inputVersion = core.getInput('tflint_version');
-    const expectedHashes = core.getInput('expected_sha256').split(',').map(hash => hash.trim());
+    const expectedHashes = core.getInput('expected_sha256')?.split(',').map(hash => hash.trim()) || undefined;
     const wrapper = core.getInput('tflint_wrapper') === 'true';
     const version = await getTFLintVersion(inputVersion);
     const platform = mapOS(os.platform());
