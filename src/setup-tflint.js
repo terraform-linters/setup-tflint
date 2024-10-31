@@ -67,15 +67,15 @@ async function computeSHA256(filePath) {
   });
 }
 
-async function downloadCLI(url, expectedHash) {
+async function downloadCLI(url, expectedHashes) {
   core.debug(`Downloading tflint CLI from ${url}`);
   const pathToCLIZip = await tc.downloadTool(url);
 
-  if (expectedHash) {
+  if (expectedHashes) {
     core.debug('Verifying SHA256 hash of downloaded file');
     const computedHash = await computeSHA256(pathToCLIZip);
-    if (computedHash !== expectedHash) {
-      throw new Error(`SHA256 hash mismatch: expected ${expectedHash}, but got ${computedHash}`);
+    if (!expectedHashes.includes(computedHash)) {
+      throw new Error(`SHA256 hash mismatch: expected one of ${expectedHashes.join(', ')}, but got ${computedHash}`);
     }
     core.debug('SHA256 hash verified successfully');
   }
@@ -124,7 +124,7 @@ async function installWrapper(pathToCLI) {
 async function run() {
   try {
     const inputVersion = core.getInput('tflint_version');
-    const expectedHash = core.getInput('expected_sha256');
+    const expectedHashes = core.getInput('expected_sha256').split(',').map(hash => hash.trim());
     const wrapper = core.getInput('tflint_wrapper') === 'true';
     const version = await getTFLintVersion(inputVersion);
     const platform = mapOS(os.platform());
@@ -133,7 +133,7 @@ async function run() {
     core.debug(`Getting download URL for tflint version ${version}: ${platform} ${arch}`);
     const url = `https://github.com/terraform-linters/tflint/releases/download/${version}/tflint_${platform}_${arch}.zip`;
 
-    const pathToCLI = await downloadCLI(url, expectedHash);
+    const pathToCLI = await downloadCLI(url, expectedHashes);
 
     if (wrapper) {
       await installWrapper(pathToCLI);
