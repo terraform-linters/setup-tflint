@@ -17,7 +17,7 @@ Default: `"latest"`
 
 A comma-separated list of expected SHA256 hashes of the downloaded TFLint binary. If provided, the action will verify the binary’s integrity and proceed only if one of the hashes matches the computed hash. 
 
-This feature can help validate downloads from different sources or mirrors.
+This feature is useful for workflows running across multiple platforms (e.g., macOS, Linux, Windows), where each platform may have a different binary (and thus a different hash) for the same version.
 
 ### `github_token`
 
