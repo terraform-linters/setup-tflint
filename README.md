@@ -13,6 +13,12 @@ If version is `"latest"`, the action will get the latest version number using [O
 
 Default: `"latest"`
 
+### `expected_sha256`
+
+A comma-separated list of expected SHA256 hashes of the downloaded TFLint binary. If provided, the action will verify the binary’s integrity and proceed only if one of the hashes matches the computed hash. 
+
+This feature can help validate downloads from different sources or mirrors.
+
 ### `github_token`
 
 Used to authenticate requests to the GitHub API to obtain release data from the TFLint repository. Authenticating will increase the [API rate limit](https://developer.github.com/v3/#rate-limiting). Any valid token is supported. No permissions are required.
@@ -32,7 +38,7 @@ Default: `"false"`
 The following outputs are available when the `tflint_wrapper` input is enabled:
 
 - `stdout` - The output (stdout) produced by the tflint command.
-- `stderr` - The error output (stdout) produced by the tflint command.
+- `stderr` - The error output (stderr) produced by the tflint command.
 - `exitcode` - The exit code produced by the tflint command.
 
 ## Usage
@@ -66,6 +72,7 @@ jobs:
       name: Setup TFLint
       with:
         tflint_version: v0.52.0
+        expected_sha256: "40f7ee2dbeb8e7cbd5ab7b10912f60eb14aa4fbff62603eeb67fdb5f7cbb794a,bf758ff29b607b3fbc4a3630ea3b39df4afafe3cdb80c6d71fe528feeac2c58e,fed6ff15ee10db34a23044ac0d4da8fdc1f2f3663b32ec85d388374dd95670aa"
 
     - name: Show version
       run: tflint --version
