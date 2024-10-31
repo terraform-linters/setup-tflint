@@ -1,5 +1,7 @@
 const os = require('os');
 const path = require('path');
+const crypto = require('crypto');
+const fs = require('fs');
 const fetch = require('node-fetch');
 
 const core = require('@actions/core');
@@ -54,9 +56,29 @@ async function getTFLintVersion(inputVersion) {
   return inputVersion;
 }
 
-async function downloadCLI(url) {
+async function computeSHA256(filePath) {
+  return new Promise((resolve, reject) => {
+    const hash = crypto.createHash('sha256');
+    const stream = fs.createReadStream(filePath);
+
+    stream.on('data', (data) => hash.update(data));
+    stream.on('end', () => resolve(hash.digest('hex')));
+    stream.on('error', (err) => reject(err));
+  });
+}
+
+async function downloadCLI(url, expectedHash) {
   core.debug(`Downloading tflint CLI from ${url}`);
   const pathToCLIZip = await tc.downloadTool(url);
+
+  if (expectedHash) {
+    core.debug('Verifying SHA256 hash of downloaded file');
+    const computedHash = await computeSHA256(pathToCLIZip);
+    if (computedHash !== expectedHash) {
+      throw new Error(`SHA256 hash mismatch: expected ${expectedHash}, but got ${computedHash}`);
+    }
+    core.debug('SHA256 hash verified successfully');
+  }
 
   core.debug('Extracting tflint CLI zip file');
   const pathToCLI = await tc.extractZip(pathToCLIZip);
@@ -102,6 +124,7 @@ async function installWrapper(pathToCLI) {
 async function run() {
   try {
     const inputVersion = core.getInput('tflint_version');
+    const expectedHash = core.getInput('expected_sha256');
     const wrapper = core.getInput('tflint_wrapper') === 'true';
     const version = await getTFLintVersion(inputVersion);
     const platform = mapOS(os.platform());
@@ -110,7 +133,7 @@ async function run() {
     core.debug(`Getting download URL for tflint version ${version}: ${platform} ${arch}`);
     const url = `https://github.com/terraform-linters/tflint/releases/download/${version}/tflint_${platform}_${arch}.zip`;
 
-    const pathToCLI = await downloadCLI(url);
+    const pathToCLI = await downloadCLI(url, expectedHash);
 
     if (wrapper) {
       await installWrapper(pathToCLI);
