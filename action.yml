@@ -14,7 +14,7 @@ inputs:
     default: 'false'
     required: false
   expected_sha256:
-    description: The expected SHA256 hash of the downloaded TFLint binary. If provided, the action will verify the binary's integrity and only proceed if the hash matches.
+    description: Comma-separated list of expected SHA256 hashes of the downloaded TFLint binary. If provided, the action will verify the binary’s integrity and only proceed if one of the hashes matches.
     required: false
 outputs:
   stdout:
