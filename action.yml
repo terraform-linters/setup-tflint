@@ -13,6 +13,9 @@ inputs:
     description: Installs a wrapper script to wrap subsequent calls to `tflint` and expose `stdout`, `stderr`, and `exitcode` outputs
     default: 'false'
     required: false
+  expected_sha256:
+    description: The expected SHA256 hash of the downloaded TFLint binary. If provided, the action will verify the binary's integrity and only proceed if the hash matches.
+    required: false
 outputs:
   stdout:
     description: The output (stdout) produced by the tflint command. Only available if `tflint_wrapper` is set to `true`.
