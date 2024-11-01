@@ -13,9 +13,9 @@ If version is `"latest"`, the action will get the latest version number using [O
 
 Default: `"latest"`
 
-### `expected_sha256`
+### `checksums`
 
-A comma-separated list of expected SHA256 hashes of the downloaded TFLint binary. If provided, the action will verify the binary’s integrity and proceed only if one of the hashes matches the computed hash. 
+**Optional** A newline-separated list of expected SHA256 hashes of the downloaded TFLint binary. If provided, the action will verify the binary’s integrity and proceed only if one of the hashes matches the computed hash. 
 
 This feature is useful for workflows running across multiple platforms (e.g., macOS, Linux, Windows), where each platform may have a different binary (and thus a different hash) for the same version.
 
@@ -72,7 +72,56 @@ jobs:
       name: Setup TFLint
       with:
         tflint_version: v0.52.0
-        expected_sha256: "40f7ee2dbeb8e7cbd5ab7b10912f60eb14aa4fbff62603eeb67fdb5f7cbb794a,bf758ff29b607b3fbc4a3630ea3b39df4afafe3cdb80c6d71fe528feeac2c58e,fed6ff15ee10db34a23044ac0d4da8fdc1f2f3663b32ec85d388374dd95670aa"
+    - name: Show version
+      run: tflint --version
+
+    - name: Init TFLint
+      run: tflint --init
+      env:
+        # https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/plugins.md#avoiding-rate-limiting
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Run TFLint
+      run: tflint -f compact
+```
+
+### Example with Checksums
+
+The following example demonstrates using the `checksums` input with newline-separated SHA256 hashes to verify the integrity of the downloaded TFLint binary across multiple platforms. This format enhances readability, especially in workflows spanning multiple platforms.
+
+```yaml
+name: Lint
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  tflint:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+      name: Checkout source code
+
+    - uses: actions/cache@v4
+      name: Cache plugin dir
+      with:
+        path: ~/.tflint.d/plugins
+        key: ${{ matrix.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
+
+    - uses: terraform-linters/setup-tflint@v4
+      name: Setup TFLint with Checksums
+      with:
+        tflint_version: v0.52.0
+        checksums: |
+          40f7ee2dbeb8e7cbd5ab7b10912f60eb14aa4fbff62603eeb67fdb5f7cbb794a
+          bf758ff29b607b3fbc4a3630ea3b39df4afafe3cdb80c6d71fe528feeac2c58e
+          fed6ff15ee10db34a23044ac0d4da8fdc1f2f3663b32ec85d388374dd95670aa
 
     - name: Show version
       run: tflint --version
@@ -86,6 +135,11 @@ jobs:
     - name: Run TFLint
       run: tflint -f compact
 ```
+
+In this example:
+
+- **`tflint_version`** is set to `v0.52.0`.
+- **`checksums`** uses a newline-separated format to list SHA256 hashes for each platform’s TFLint binary. The action verifies that the downloaded binary’s hash matches one of these checksums before proceeding.
 
 ### Latest Release
 

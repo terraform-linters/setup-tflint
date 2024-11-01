@@ -13,8 +13,8 @@ inputs:
     description: Installs a wrapper script to wrap subsequent calls to `tflint` and expose `stdout`, `stderr`, and `exitcode` outputs
     default: 'false'
     required: false
-  expected_sha256:
-    description: Comma-separated list of expected SHA256 hashes of the downloaded TFLint binary. If provided, the action will verify the binary’s integrity and only proceed if one of the hashes matches.
+  checksums:
+    description: Newline-separated list of expected SHA256 hashes of the downloaded TFLint binary. If provided, the action will verify the binary’s integrity and only proceed if one of the hashes matches.
     required: false
 outputs:
   stdout:
