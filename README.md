@@ -87,7 +87,7 @@ jobs:
 
 ### Example with Checksums
 
-The following example demonstrates using the `checksums` input with newline-separated SHA256 hashes to verify the integrity of the downloaded TFLint binary across multiple platforms. This format enhances readability, especially in workflows spanning multiple platforms.
+The following example demonstrates using the `checksums` input with newline-separated SHA256 hashes to verify the integrity of the downloaded TFLint binary across multiple platforms.
 
 ```yaml
 name: Lint
