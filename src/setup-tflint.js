@@ -1,11 +1,11 @@
 const os = require('os');
 const path = require('path');
-const fetch = require('node-fetch');
 
 const core = require('@actions/core');
 const io = require('@actions/io');
 const tc = require('@actions/tool-cache');
 const { Octokit } = require('@octokit/rest');
+const fetch = require('node-fetch');
 
 /**
  * Get the GitHub platform architecture name
@@ -35,7 +35,7 @@ function mapOS(osPlatform) {
 function getOctokit() {
   return new Octokit({
     auth: core.getInput('github_token'),
-    request: {fetch}
+    request: { fetch },
   });
 }
 

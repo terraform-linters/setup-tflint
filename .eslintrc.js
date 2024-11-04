@@ -7,10 +7,14 @@ module.exports = {
     'security',
     'import',
   ],
-  extends: ['eslint:recommended', 'airbnb-base', 'prettier', 'plugin:prettier/recommended'],
+  extends: ['eslint:recommended', 'prettier', 'plugin:prettier/recommended'],
   env: {
     node: true,
     es6: true,
+  },
+  parser: '@babel/eslint-parser',
+  parserOptions: {
+    requireConfigFile: false,
   },
   settings: {
     'import/resolver': {
@@ -70,7 +74,6 @@ module.exports = {
       { blankLine: 'always', prev: 'if', next: 'if' },
       { blankLine: 'never', prev: ['return', 'throw'], next: '*' },
     ],
-    strict: ['error', 'safe'],
     'no-new': 'off',
     'no-empty': 'error',
     'no-empty-function': 'error',
@@ -126,47 +129,7 @@ module.exports = {
     'security/detect-pseudoRandomBytes': 'error',
     'security/detect-unsafe-regex': 'error',
 
-    // Override airbnb
-    eqeqeq: ['error', 'smart'],
-    'func-names': 'error',
-    'id-length': ['error', { exceptions: ['_', '$', 'e', 'i', 'j', 'k', 'q', 'x', 'y'] }],
-    'no-param-reassign': 'off', // Work toward enforcing this rule
-    radix: 'off',
-    'spaced-comment': 'off',
-    'max-len': 'off',
-    'no-continue': 'off',
-    'no-plusplus': 'off',
-    'no-prototype-builtins': 'off',
-    'no-restricted-syntax': ['error', 'DebuggerStatement', 'LabeledStatement', 'WithStatement'],
-    'no-restricted-properties': [
-      'error',
-      {
-        object: 'arguments',
-        property: 'callee',
-        message: 'arguments.callee is deprecated',
-      },
-      {
-        property: '__defineGetter__',
-        message: 'Please use Object.defineProperty instead.',
-      },
-      {
-        property: '__defineSetter__',
-        message: 'Please use Object.defineProperty instead.',
-      },
-    ],
-    'no-useless-escape': 'off',
-    'object-shorthand': [
-      'error',
-      'always',
-      {
-        ignoreConstructors: false,
-        avoidQuotes: true,
-        avoidExplicitReturnArrows: true,
-      },
-    ],
-    // 'prefer-arrow-callback': ['error', { 'allowNamedFunctions': true }],
-    'prefer-spread': 'error',
-    'prefer-destructuring': 'off',
+    strict: 'off',
   },
   overrides: [
     {

@@ -13949,12 +13949,12 @@ function wrappy (fn, cb) {
 
 const os = __nccwpck_require__(2037);
 const path = __nccwpck_require__(1017);
-const fetch = __nccwpck_require__(467);
 
 const core = __nccwpck_require__(2186);
 const io = __nccwpck_require__(7436);
 const tc = __nccwpck_require__(7784);
 const { Octokit } = __nccwpck_require__(5375);
+const fetch = __nccwpck_require__(467);
 
 /**
  * Get the GitHub platform architecture name
@@ -13984,7 +13984,7 @@ function mapOS(osPlatform) {
 function getOctokit() {
   return new Octokit({
     auth: core.getInput('github_token'),
-    request: {fetch}
+    request: { fetch },
   });
 }
 
