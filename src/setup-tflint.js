@@ -5,7 +5,7 @@ const core = require('@actions/core');
 const io = require('@actions/io');
 const tc = require('@actions/tool-cache');
 const { Octokit } = require('@octokit/rest');
-const fetch = require('node-fetch');
+const fetch = require('node-fetch'); // eslint-disable-line no-redeclare
 
 /**
  * Get the GitHub platform architecture name
