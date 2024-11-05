@@ -15,11 +15,12 @@ Default: `"latest"`
 
 ### `checksums`
 
-**Optional** A newline-separated list of expected SHA256 hashes of the downloaded TFLint binary. If provided, the action will verify the binary’s integrity and proceed only if one of the hashes matches the computed hash. 
+**Optional** A newline-separated list of expected SHA256 hashes of the downloaded TFLint binary. If provided, the action will verify the binary’s hash matches one of these hashes before proceeding. 
 
-This feature is useful for workflows running across multiple platforms (e.g., macOS, Linux, Windows), where each platform may have a different binary (and thus a different hash) for the same version.
+This helps ensure the downloaded binary remains unaltered by verifying that its hash matches an expected value, thereby guaranteeing immutability. Allowing multiple hashes enables compatibility across multiple platforms, architectures, or operating systems (e.g., macOS, Linux, Windows), each of which may produce a unique hash for the same version.
 
-**Note:** Since hash verification requires manual pinning, users are advised to verify the downloaded binary's hashes independently (using methods like [GitHub’s Artifact Attestations](https://github.com/terraform-linters/tflint?tab=readme-ov-file#github-cli-recommended) or [cosign](https://github.com/terraform-linters/tflint?tab=readme-ov-file#cosign)) before pinning them in workflows to ensure that only approved binaries are used.
+**Note:** **Checksums ensure only immutability**—that the downloaded binary has not been altered since the checksum was generated. They do not verify integrity, trust, attribution, or authenticity. Users are advised to verify the binary's source and authenticity independently, using methods such as [GitHub’s Artifact Attestations](https://github.com/terraform-linters/tflint?tab=readme-ov-file#github-cli-recommended) or [cosign](https://github.com/terraform-linters/tflint?tab=readme-ov-file#cosign), before pinning hashes in workflows to ensure that only approved binaries are used.
+
 
 ### `github_token`
 
