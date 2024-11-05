@@ -19,6 +19,8 @@ Default: `"latest"`
 
 This feature is useful for workflows running across multiple platforms (e.g., macOS, Linux, Windows), where each platform may have a different binary (and thus a different hash) for the same version.
 
+**Note:** Since hash verification requires manual pinning, users are advised to verify the downloaded binary's hashes independently (using methods like [GitHub’s Artifact Attestations](https://github.com/terraform-linters/tflint?tab=readme-ov-file#github-cli-recommended) or [cosign](https://github.com/terraform-linters/tflint?tab=readme-ov-file#cosign)) before pinning them in workflows to ensure that only approved binaries are used.
+
 ### `github_token`
 
 Used to authenticate requests to the GitHub API to obtain release data from the TFLint repository. Authenticating will increase the [API rate limit](https://developer.github.com/v3/#rate-limiting). Any valid token is supported. No permissions are required.
