@@ -15,11 +15,11 @@ Default: `"latest"`
 
 ### `checksums`
 
-**Optional** A newline-separated list of expected SHA256 hashes of the downloaded TFLint binary. If provided, the action will verify the binary’s hash matches one of these hashes before proceeding. 
+**Optional** A newline-delimited list of valid checksums (SHA256 hashes) for the downloaded TFLint binary. When set, the action will verify the binary’s matches one of these checksums before proceeding. 
 
-This helps ensure the downloaded binary remains unaltered by verifying that its hash matches an expected value, thereby guaranteeing immutability. Allowing multiple hashes enables compatibility across multiple platforms, architectures, or operating systems (e.g., macOS, Linux, Windows), each of which may produce a unique hash for the same version.
+This ensures that the downloaded binary for a given version is a known build. If your job runs in multiple operating systems or architectures, include appropriate checksums for all of them.
 
-**Note:** **Checksums ensure only immutability**—that the downloaded binary has not been altered since the checksum was generated. They do not verify integrity, trust, attribution, or authenticity. Users are advised to verify the binary's source and authenticity independently, using methods such as [GitHub’s Artifact Attestations](https://github.com/terraform-linters/tflint?tab=readme-ov-file#github-cli-recommended) or [cosign](https://github.com/terraform-linters/tflint?tab=readme-ov-file#cosign), before pinning hashes in workflows to ensure that only approved binaries are used.
+**Note:** Checksums ensure _immutability_, but do not verify integrity. To prove that checksums come from a known build in TFLint's official repository, use [GitHub’s Artifact Attestations](https://github.com/terraform-linters/tflint?tab=readme-ov-file#github-cli-recommended) or [cosign](https://github.com/terraform-linters/tflint?tab=readme-ov-file#cosign).
 
 
 ### `github_token`
