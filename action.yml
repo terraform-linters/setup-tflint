@@ -14,7 +14,7 @@ inputs:
     default: 'false'
     required: false
   checksums:
-    description: Newline-delimited list of valid checksums (SHA256 hashes) for the downloaded TFLint binary. When set, the action will verify the binary matches one of these checksums before proceeding.
+    description: Newline-delimited list of valid checksums (SHA256 hashes) for the downloaded TFLint binary. When set, the action will verify that the binary matches one of these checksums before proceeding.
     required: false
 outputs:
   stdout:

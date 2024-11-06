@@ -15,7 +15,7 @@ Default: `"latest"`
 
 ### `checksums`
 
-**Optional** A newline-delimited list of valid checksums (SHA256 hashes) for the downloaded TFLint binary. When set, the action will verify the binary’s matches one of these checksums before proceeding. 
+**Optional** A newline-delimited list of valid checksums (SHA256 hashes) for the downloaded TFLint binary. When set, the action will verify that the binary matches one of these checksums before proceeding.
 
 This ensures that the downloaded binary for a given version is a known build. If your job runs in multiple operating systems or architectures, include appropriate checksums for all of them.
 
