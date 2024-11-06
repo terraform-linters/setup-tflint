@@ -2,7 +2,6 @@ const os = require('os');
 const path = require('path');
 const crypto = require('crypto');
 const fs = require('fs');
-const fetch = require('node-fetch');
 
 const core = require('@actions/core');
 const io = require('@actions/io');
@@ -37,7 +36,6 @@ function mapOS(osPlatform) {
 function getOctokit() {
   return new Octokit({
     auth: core.getInput('github_token'),
-    request: {fetch}
   });
 }
 
