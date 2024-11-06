@@ -2,6 +2,7 @@ const os = require('os');
 const path = require('path');
 const crypto = require('crypto');
 const fs = require('fs');
+const { pipeline } = require('stream/promises')
 
 const core = require('@actions/core');
 const io = require('@actions/io');
@@ -54,26 +55,25 @@ async function getTFLintVersion(inputVersion) {
   return inputVersion;
 }
 
-async function computeSHA256(filePath) {
-  return new Promise((resolve, reject) => {
-    const hash = crypto.createHash('sha256');
-    const stream = fs.createReadStream(filePath);
+async function fileSHA256(filePath) {
+  const hash = crypto.createHash('sha256');
+  const fileStream = fs.createReadStream(filePath);
 
-    stream.on('data', (data) => hash.update(data));
-    stream.on('end', () => resolve(hash.digest('hex')));
-    stream.on('error', (err) => reject(err));
-  });
+  await pipeline(fileStream, hash);
+  return hash.digest('hex');
 }
 
-async function downloadCLI(url, expectedHashes) {
+async function downloadCLI(url, checksums) {
   core.debug(`Downloading tflint CLI from ${url}`);
   const pathToCLIZip = await tc.downloadTool(url);
 
-  if (expectedHashes) {
-    core.debug('Verifying SHA256 hash of downloaded file');
-    const computedHash = await computeSHA256(pathToCLIZip);
-    if (!expectedHashes.includes(computedHash)) {
-      throw new Error(`SHA256 hash mismatch: expected one of ${expectedHashes.join(', ')}, but got ${computedHash}`);
+  if (checksums) {
+    core.debug('Verifying checksum of downloaded file');
+
+    const checksum = await fileSHA256(pathToCLIZip);
+
+    if (!checksums.includes(checksum)) {
+      throw new Error(`Mismatched checksum: expected one of ${checksums.join(', ')}, but got ${checksum}`);
     }
     core.debug('SHA256 hash verified successfully');
   }
@@ -122,7 +122,7 @@ async function installWrapper(pathToCLI) {
 async function run() {
   try {
     const inputVersion = core.getInput('tflint_version');
-    const expectedHashes = core.getInput('checksums')?.split('\n').map(hash => hash.trim()) || undefined;
+    const checksums = core.getInput('checksums')?.trim().split('\n').map(c => c.trim());
     const wrapper = core.getInput('tflint_wrapper') === 'true';
     const version = await getTFLintVersion(inputVersion);
     const platform = mapOS(os.platform());
@@ -131,7 +131,7 @@ async function run() {
     core.debug(`Getting download URL for tflint version ${version}: ${platform} ${arch}`);
     const url = `https://github.com/terraform-linters/tflint/releases/download/${version}/tflint_${platform}_${arch}.zip`;
 
-    const pathToCLI = await downloadCLI(url, expectedHashes);
+    const pathToCLI = await downloadCLI(url, checksums);
 
     if (wrapper) {
       await installWrapper(pathToCLI);
