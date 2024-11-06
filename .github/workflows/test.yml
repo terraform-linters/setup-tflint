@@ -88,6 +88,21 @@ jobs:
       if: matrix.tflint_version == 'latest'
       run: tflint -v
 
+  integration-checksum:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Action
+        uses: ./
+        with:
+          tflint_version: 'v0.53.0'
+          # https://github.com/terraform-linters/tflint/releases/tag/v0.53.0
+          # checksums.txt
+          # tflint_linux_amd64
+          checksums: bb0a3a6043ea1bcd221fc95d49bac831bb511eb31946ca6a4050983e9e584578
+      - run: tflint -v
+
   integration-matchers:
     name: 'Integration test (tflint_version: ${{ matrix.tflint_version }})'
     runs-on: ubuntu-latest
