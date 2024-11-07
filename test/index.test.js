@@ -5,7 +5,6 @@ const tc = require('@actions/tool-cache');
 
 const setup = require('../src/setup-tflint');
 
-jest.mock('@actions/core');
 jest.mock('@actions/tool-cache');
 fs.chmodSync = jest.fn();
 
@@ -30,8 +29,8 @@ describe('Mock tests', () => {
   });
 
   test('add path should be called', async () => {
+    jest.spyOn(core, 'addPath');
     await setup();
-
     expect(core.addPath).toBeCalledTimes(1);
   });
 });

@@ -67,7 +67,7 @@ async function downloadCLI(url, checksums) {
   core.debug(`Downloading tflint CLI from ${url}`);
   const pathToCLIZip = await tc.downloadTool(url);
 
-  if (checksums) {
+  if (checksums.length > 0) {
     core.debug('Verifying checksum of downloaded file');
 
     const checksum = await fileSHA256(pathToCLIZip);
@@ -122,7 +122,7 @@ async function installWrapper(pathToCLI) {
 async function run() {
   try {
     const inputVersion = core.getInput('tflint_version');
-    const checksums = core.getInput('checksums')?.trim().split('\n').map(c => c.trim());
+    const checksums = core.getMultilineInput('checksums');
     const wrapper = core.getInput('tflint_wrapper') === 'true';
     const version = await getTFLintVersion(inputVersion);
     const platform = mapOS(os.platform());
