@@ -9989,6 +9989,9 @@ function wrappy (fn, cb) {
 
 const os = __nccwpck_require__(2037);
 const path = __nccwpck_require__(1017);
+const crypto = __nccwpck_require__(6113);
+const fs = __nccwpck_require__(7147);
+const { pipeline } = __nccwpck_require__(4845)
 
 const core = __nccwpck_require__(2186);
 const io = __nccwpck_require__(7436);
@@ -10041,9 +10044,28 @@ async function getTFLintVersion(inputVersion) {
   return inputVersion;
 }
 
-async function downloadCLI(url) {
+async function fileSHA256(filePath) {
+  const hash = crypto.createHash('sha256');
+  const fileStream = fs.createReadStream(filePath);
+
+  await pipeline(fileStream, hash);
+  return hash.digest('hex');
+}
+
+async function downloadCLI(url, checksums) {
   core.debug(`Downloading tflint CLI from ${url}`);
   const pathToCLIZip = await tc.downloadTool(url);
+
+  if (checksums.length > 0) {
+    core.debug('Verifying checksum of downloaded file');
+
+    const checksum = await fileSHA256(pathToCLIZip);
+
+    if (!checksums.includes(checksum)) {
+      throw new Error(`Mismatched checksum: expected one of ${checksums.join(', ')}, but got ${checksum}`);
+    }
+    core.debug('SHA256 hash verified successfully');
+  }
 
   core.debug('Extracting tflint CLI zip file');
   const pathToCLI = await tc.extractZip(pathToCLIZip);
@@ -10089,6 +10111,7 @@ async function installWrapper(pathToCLI) {
 async function run() {
   try {
     const inputVersion = core.getInput('tflint_version');
+    const checksums = core.getMultilineInput('checksums');
     const wrapper = core.getInput('tflint_wrapper') === 'true';
     const version = await getTFLintVersion(inputVersion);
     const platform = mapOS(os.platform());
@@ -10097,7 +10120,7 @@ async function run() {
     core.debug(`Getting download URL for tflint version ${version}: ${platform} ${arch}`);
     const url = `https://github.com/terraform-linters/tflint/releases/download/${version}/tflint_${platform}_${arch}.zip`;
 
-    const pathToCLI = await downloadCLI(url);
+    const pathToCLI = await downloadCLI(url, checksums);
 
     if (wrapper) {
       await installWrapper(pathToCLI);
@@ -10205,6 +10228,14 @@ module.exports = require("path");
 
 "use strict";
 module.exports = require("stream");
+
+/***/ }),
+
+/***/ 4845:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("stream/promises");
 
 /***/ }),
 

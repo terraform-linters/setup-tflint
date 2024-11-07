@@ -13,6 +13,9 @@ inputs:
     description: Installs a wrapper script to wrap subsequent calls to `tflint` and expose `stdout`, `stderr`, and `exitcode` outputs
     default: 'false'
     required: false
+  checksums:
+    description: Newline-delimited list of valid checksums (SHA256 hashes) for the downloaded TFLint binary. When set, the action will verify that the binary matches one of these checksums before proceeding.
+    required: false
 outputs:
   stdout:
     description: The output (stdout) produced by the tflint command. Only available if `tflint_wrapper` is set to `true`.

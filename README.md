@@ -13,6 +13,15 @@ If version is `"latest"`, the action will get the latest version number using [O
 
 Default: `"latest"`
 
+### `checksums`
+
+**Optional** A newline-delimited list of valid checksums (SHA256 hashes) for the downloaded TFLint binary. When set, the action will verify that the binary matches one of these checksums before proceeding.
+
+This ensures that the downloaded binary for a given version is a known build. If your job runs in multiple operating systems or architectures, include appropriate checksums for all of them.
+
+**Note:** Checksums ensure _immutability_, but do not verify integrity. To prove that checksums come from a known build in TFLint's official repository, use [GitHub’s Artifact Attestations](https://github.com/terraform-linters/tflint?tab=readme-ov-file#github-cli-recommended) or [cosign](https://github.com/terraform-linters/tflint?tab=readme-ov-file#cosign).
+
+
 ### `github_token`
 
 Used to authenticate requests to the GitHub API to obtain release data from the TFLint repository. Authenticating will increase the [API rate limit](https://developer.github.com/v3/#rate-limiting). Any valid token is supported. No permissions are required.
@@ -32,7 +41,7 @@ Default: `"false"`
 The following outputs are available when the `tflint_wrapper` input is enabled:
 
 - `stdout` - The output (stdout) produced by the tflint command.
-- `stderr` - The error output (stdout) produced by the tflint command.
+- `stderr` - The error output (stderr) produced by the tflint command.
 - `exitcode` - The exit code produced by the tflint command.
 
 ## Usage
@@ -66,7 +75,6 @@ jobs:
       name: Setup TFLint
       with:
         tflint_version: v0.52.0
-
     - name: Show version
       run: tflint --version
 
