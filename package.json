@@ -1,7 +1,7 @@
 {
   "name": "setup-tflint-action",
   "version": "2.1.0",
-  "description": "Install and setup TFLint executable Action with SHA256 verification",
+  "description": "Install and setup TFLint executable",
   "main": "index.js",
   "scripts": {
     "lint": "eslint --fix . src test",
@@ -24,9 +24,7 @@
     "GitHub",
     "Actions",
     "TFLint",
-    "Terraform",
-    "SHA256",
-    "Verification"
+    "Terraform"
   ],
   "license": "MIT",
   "bugs": {
