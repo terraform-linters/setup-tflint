@@ -6,7 +6,7 @@ A GitHub action that installs a Terraform linter [TFLint](https://github.com/ter
 
 ### `tflint_version`
 
-**Required** The version of TFLint which will be installed.
+**Optional** The version of TFLint which will be installed.
 See [TFLint releases page](https://github.com/terraform-linters/tflint/releases) for valid versions.
 
 If version is `"latest"`, the action will get the latest version number using [Octokit](https://octokit.github.io/rest.js/).
@@ -24,7 +24,7 @@ This ensures that the downloaded binary for a given version is a known build. If
 
 ### `github_token`
 
-Used to authenticate requests to the GitHub API to obtain release data from the TFLint repository. Authenticating will increase the [API rate limit](https://developer.github.com/v3/#rate-limiting). Any valid token is supported. No permissions are required.
+**Optional** Used to authenticate requests to the GitHub API to obtain release data from the TFLint repository. Authenticating will increase the [API rate limit](https://developer.github.com/v3/#rate-limiting). Any valid token is supported. No permissions are required.
 
 Default: `${{ github.server_url == 'https://github.com' && github.token || '' }}`
 
@@ -32,7 +32,7 @@ GitHub Enterprise Server will make requests to github.com anonymously by default
 
 ### `tflint_wrapper`
 
-Installs a wrapper script to wrap subsequent calls to `tflint` and expose `stdout`, `stderr`, and `exitcode` outputs.
+**Optional** Installs a wrapper script to wrap subsequent calls to `tflint` and expose `stdout`, `stderr`, and `exitcode` outputs.
 
 Default: `"false"`
 
