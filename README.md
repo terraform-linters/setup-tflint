@@ -4,10 +4,11 @@ A GitHub action that installs a Terraform linter [TFLint](https://github.com/ter
 
 ## Inputs
 
+All inputs are optional, but may include a default where specified.
+
 ### `tflint_version`
 
-**Required** The version of TFLint which will be installed.
-See [TFLint releases page](https://github.com/terraform-linters/tflint/releases) for valid versions.
+The version of TFLint which will be installed. See [TFLint releases page](https://github.com/terraform-linters/tflint/releases) for valid versions.
 
 If version is `"latest"`, the action will get the latest version number using [Octokit](https://octokit.github.io/rest.js/).
 
@@ -15,7 +16,7 @@ Default: `"latest"`
 
 ### `checksums`
 
-**Optional** A newline-delimited list of valid checksums (SHA256 hashes) for the downloaded TFLint binary. When set, the action will verify that the binary matches one of these checksums before proceeding.
+A newline-delimited list of valid checksums (SHA256 hashes) for the downloaded TFLint binary. When set, the action will verify that the binary matches one of these checksums before proceeding.
 
 This ensures that the downloaded binary for a given version is a known build. If your job runs in multiple operating systems or architectures, include appropriate checksums for all of them.
 
