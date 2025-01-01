@@ -43,7 +43,7 @@
     "@babel/eslint-parser": "^7.25.9",
     "@eslint/compat": "^1.2.2",
     "@eslint/eslintrc": "^3.1.0",
-    "@eslint/js": "^9.14.0",
+    "@eslint/js": "^9.17.0",
     "@vercel/ncc": "^0.38.3",
     "eslint": "^9.16.0",
     "eslint-config-prettier": "^9.1.0",
