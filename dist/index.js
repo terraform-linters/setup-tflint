@@ -10160,32 +10160,24 @@ async function downloadCLI(url, checksums) {
 }
 
 async function installWrapper(pathToCLI) {
-  let source;
-  let target;
+  // Move the original tflint binary to a new location
+  await io.mv(
+    external_path_.join(pathToCLI, 'tflint'),
+    external_path_.join(pathToCLI, 'tflint-bin')
+  );
 
-  // Rename tflint to tflint-bin
-  try {
-    source = [pathToCLI, `tflint`].join(external_path_.sep);
-    target = [pathToCLI, `tflint-bin`].join(external_path_.sep);
-    core.debug(`Moving ${source} to ${target}.`);
-    await io.mv(source, target);
-  } catch (e) {
-    core.error(`Unable to move ${source} to ${target}.`);
-    throw e;
-  }
+  // Copy the wrapper script to the tflint binary location
+  await io.cp(
+    __nccwpck_require__.ab + "index1.js",
+    external_path_.join(pathToCLI, 'tflint')
+  );
 
-  // Install wrapper as tflint
-  try {
-    source = __nccwpck_require__.ab + "index1.js";
-    target = [pathToCLI, 'tflint'].join(external_path_.sep);
-    core.debug(`Copying ${source} to ${target}.`);
-    await io.cp(__nccwpck_require__.ab + "index1.js", target);
-  } catch (e) {
-    core.error(`Unable to copy ${source} to ${target}.`);
-    throw e;
-  }
+  // Copy the wrapper script package.json to the tflint binary location
+  await io.cp(
+    __nccwpck_require__.ab + "package.json",
+    external_path_.join(pathToCLI, 'package.json')
+  );
 
-  // Export a new environment variable, so our wrapper can locate the binary
   core.exportVariable('TFLINT_CLI_PATH', pathToCLI);
 }
 
