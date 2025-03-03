@@ -137,7 +137,6 @@ export default [
       'no-empty-function': 'error',
       'valid-jsdoc': 'off',
       yoda: 'error',
-      'import/extensions': ['error', 'never'],
       'import/no-unresolved': 'off',
 
       'import/order': [
