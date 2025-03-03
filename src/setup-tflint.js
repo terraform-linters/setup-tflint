@@ -1,14 +1,15 @@
-import os from 'os';
-import path from 'path';
 import crypto from 'crypto';
 import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import { dirname } from 'path';
 import { pipeline } from 'stream/promises';
+import { fileURLToPath } from 'url';
+
 import core from '@actions/core';
 import io from '@actions/io';
-import { Octokit } from '@octokit/rest';
 import * as tc from '@actions/tool-cache';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { Octokit } from '@octokit/rest';
 
 const __filename = fileURLToPath(import.meta.url);
 const localDir = dirname(__filename);
@@ -61,7 +62,7 @@ async function getTFLintVersion(inputVersion) {
 
 async function fileSHA256(filePath) {
   const hash = crypto.createHash('sha256');
-  const fileStream = fs.createReadStream(filePath);
+  const fileStream = fs.createReadStream(filePath); // eslint-disable-line security/detect-non-literal-fs-filename
 
   await pipeline(fileStream, hash);
   return hash.digest('hex');
@@ -79,6 +80,7 @@ async function downloadCLI(url, checksums) {
     if (!checksums.includes(checksum)) {
       throw new Error(`Mismatched checksum: expected one of ${checksums.join(', ')}, but got ${checksum}`);
     }
+
     core.debug('SHA256 hash verified successfully');
   }
 

@@ -1,4 +1,5 @@
 import core from '@actions/core';
+
 import setup from './src/setup-tflint';
 
 async function run() {
