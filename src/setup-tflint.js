@@ -6,10 +6,12 @@ import { pipeline } from 'stream/promises';
 import core from '@actions/core';
 import io from '@actions/io';
 import { Octokit } from '@octokit/rest';
+import * as tc from '@actions/tool-cache';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-async function getToolCache() {
-  return import('@actions/tool-cache');
-}
+const __filename = fileURLToPath(import.meta.url);
+const localDir = dirname(__filename);
 
 /**
  * Get the GitHub platform architecture name
@@ -66,7 +68,6 @@ async function fileSHA256(filePath) {
 }
 
 async function downloadCLI(url, checksums) {
-  const tc = await getToolCache();
   core.debug(`Downloading tflint CLI from ${url}`);
   const pathToCLIZip = await tc.downloadTool(url);
 
@@ -109,7 +110,7 @@ async function installWrapper(pathToCLI) {
 
   // Install wrapper as tflint
   try {
-    source = path.resolve([__dirname, '..', 'wrapper', 'dist', 'index.js'].join(path.sep));
+    source = path.resolve([localDir, '..', 'wrapper', 'dist', 'index.js'].join(path.sep));
     target = [pathToCLI, 'tflint'].join(path.sep);
     core.debug(`Copying ${source} to ${target}.`);
     await io.cp(source, target);
@@ -142,7 +143,7 @@ async function run() {
 
     core.addPath(pathToCLI);
 
-    const matchersPath = path.join(__dirname, '..', '.github', 'matchers.json');
+    const matchersPath = path.join(localDir, '..', '.github', 'matchers.json');
     core.info(`##[add-matcher]${matchersPath}`);
 
     return version;
