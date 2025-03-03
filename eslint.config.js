@@ -1,21 +1,21 @@
-const babelParser = require('@babel/eslint-parser');
-const { fixupPluginRules } = require('@eslint/compat');
-const { FlatCompat } = require('@eslint/eslintrc');
-const js = require('@eslint/js');
-const _import = require('eslint-plugin-import');
-const jest = require('eslint-plugin-jest');
-const jsdoc = require('eslint-plugin-jsdoc');
-const promise = require('eslint-plugin-promise');
-const security = require('eslint-plugin-security');
-const globals = require('globals');
+import babelParser from '@babel/eslint-parser';
+import { fixupPluginRules } from '@eslint/compat';
+import { FlatCompat } from '@eslint/eslintrc';
+import js from '@eslint/js';
+import _import from 'eslint-plugin-import';
+import jest from 'eslint-plugin-jest';
+import jsdoc from 'eslint-plugin-jsdoc';
+import promise from 'eslint-plugin-promise';
+import security from 'eslint-plugin-security';
+import globals from 'globals';
 
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
+  baseDirectory: new URL('.', import.meta.url).pathname,
   recommendedConfig: js.configs.recommended,
   allConfig: js.configs.all,
 });
 
-module.exports = [
+export default [
   {
     ignores: ['**/dist/'],
   },
@@ -35,12 +35,11 @@ module.exports = [
       },
 
       parser: babelParser,
-      ecmaVersion: 5,
-      sourceType: 'commonjs',
+      sourceType: 'module',
 
       parserOptions: {
         requireConfigFile: false,
-        sourceType: 'script',
+        sourceType: 'module',
       },
     },
 

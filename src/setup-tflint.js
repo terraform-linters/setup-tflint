@@ -1,13 +1,13 @@
-const os = require('os');
-const path = require('path');
-const crypto = require('crypto');
-const fs = require('fs');
-const { pipeline } = require('stream/promises')
+import crypto from 'crypto';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import { pipeline } from 'stream/promises';
 
-const core = require('@actions/core');
-const io = require('@actions/io');
-const tc = require('@actions/tool-cache');
-const { Octokit } = require('@octokit/rest');
+import core from '@actions/core';
+import io from '@actions/io';
+import * as tc from '@actions/tool-cache';
+import { Octokit } from '@octokit/rest';
 
 /**
  * Get the GitHub platform architecture name
@@ -57,7 +57,7 @@ async function getTFLintVersion(inputVersion) {
 
 async function fileSHA256(filePath) {
   const hash = crypto.createHash('sha256');
-  const fileStream = fs.createReadStream(filePath);
+  const fileStream = fs.createReadStream(filePath); // eslint-disable-line security/detect-non-literal-fs-filename
 
   await pipeline(fileStream, hash);
   return hash.digest('hex');
@@ -75,6 +75,7 @@ async function downloadCLI(url, checksums) {
     if (!checksums.includes(checksum)) {
       throw new Error(`Mismatched checksum: expected one of ${checksums.join(', ')}, but got ${checksum}`);
     }
+
     core.debug('SHA256 hash verified successfully');
   }
 
@@ -90,32 +91,24 @@ async function downloadCLI(url, checksums) {
 }
 
 async function installWrapper(pathToCLI) {
-  let source;
-  let target;
+  // Move the original tflint binary to a new location
+  await io.mv(
+    path.join(pathToCLI, 'tflint'),
+    path.join(pathToCLI, 'tflint-bin')
+  );
 
-  // Rename tflint to tflint-bin
-  try {
-    source = [pathToCLI, `tflint`].join(path.sep);
-    target = [pathToCLI, `tflint-bin`].join(path.sep);
-    core.debug(`Moving ${source} to ${target}.`);
-    await io.mv(source, target);
-  } catch (e) {
-    core.error(`Unable to move ${source} to ${target}.`);
-    throw e;
-  }
+  // Copy the wrapper script to the tflint binary location
+  await io.cp(
+    path.resolve(path.join(__dirname, '..', 'wrapper', 'dist', 'index.js')),
+    path.join(pathToCLI, 'tflint')
+  );
 
-  // Install wrapper as tflint
-  try {
-    source = path.resolve([__dirname, '..', 'wrapper', 'dist', 'index.js'].join(path.sep));
-    target = [pathToCLI, 'tflint'].join(path.sep);
-    core.debug(`Copying ${source} to ${target}.`);
-    await io.cp(source, target);
-  } catch (e) {
-    core.error(`Unable to copy ${source} to ${target}.`);
-    throw e;
-  }
+  // Copy the wrapper script package.json to the tflint binary location
+  await io.cp(
+    path.resolve(path.join(__dirname, '..', 'wrapper', 'dist', 'package.json')),
+    path.join(pathToCLI, 'package.json')
+  );
 
-  // Export a new environment variable, so our wrapper can locate the binary
   core.exportVariable('TFLINT_CLI_PATH', pathToCLI);
 }
 
@@ -149,4 +142,4 @@ async function run() {
   }
 }
 
-module.exports = run;
+export default run;

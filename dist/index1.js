@@ -1,11 +1,10 @@
 #!/usr/bin/env node
-/******/ (() => { // webpackBootstrap
-/******/ 	var __webpack_modules__ = ({
+import { createRequire as __WEBPACK_EXTERNAL_createRequire } from "module";
+/******/ var __webpack_modules__ = ({
 
 /***/ 914:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -108,7 +107,6 @@ function escapeProperty(s) {
 /***/ 484:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -459,7 +457,6 @@ exports.platform = __importStar(__nccwpck_require__(968));
 /***/ 753:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 // For internal use, subject to change.
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
@@ -528,7 +525,6 @@ exports.prepareKeyValueMessage = prepareKeyValueMessage;
 /***/ 306:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -612,7 +608,6 @@ exports.OidcClient = OidcClient;
 /***/ 976:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -681,7 +676,6 @@ exports.toPlatformPath = toPlatformPath;
 /***/ 968:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -782,7 +776,6 @@ exports.getDetails = getDetails;
 /***/ 847:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1072,7 +1065,6 @@ exports.summary = _summary;
 /***/ 302:
 /***/ ((__unused_webpack_module, exports) => {
 
-"use strict";
 
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -1119,7 +1111,6 @@ exports.toCommandProperties = toCommandProperties;
 /***/ 236:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -1229,7 +1220,6 @@ exports.getExecOutput = getExecOutput;
 /***/ 665:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -1854,7 +1844,6 @@ class ExecState extends events.EventEmitter {
 /***/ 552:
 /***/ (function(__unused_webpack_module, exports) {
 
-"use strict";
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1942,7 +1931,6 @@ exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHand
 /***/ 844:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
@@ -2554,7 +2542,6 @@ const lowercaseKeys = (obj) => Object.keys(obj).reduce((c, k) => ((c[k.toLowerCa
 /***/ 988:
 /***/ ((__unused_webpack_module, exports) => {
 
-"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.checkBypass = exports.getProxyUrl = void 0;
@@ -2622,7 +2609,6 @@ exports.checkBypass = checkBypass;
 /***/ 207:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -2812,7 +2798,6 @@ exports.getCmdPath = getCmdPath;
 /***/ 994:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -3126,7 +3111,6 @@ module.exports = __nccwpck_require__(218);
 /***/ 218:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 var net = __nccwpck_require__(278);
@@ -3395,9 +3379,151 @@ exports.debug = debug; // for test
 
 /***/ }),
 
-/***/ 16:
+/***/ 613:
 /***/ ((module) => {
 
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("assert");
+
+/***/ }),
+
+/***/ 317:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("child_process");
+
+/***/ }),
+
+/***/ 982:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("crypto");
+
+/***/ }),
+
+/***/ 434:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("events");
+
+/***/ }),
+
+/***/ 896:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("fs");
+
+/***/ }),
+
+/***/ 611:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("http");
+
+/***/ }),
+
+/***/ 692:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("https");
+
+/***/ }),
+
+/***/ 278:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("net");
+
+/***/ }),
+
+/***/ 857:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("os");
+
+/***/ }),
+
+/***/ 928:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("path");
+
+/***/ }),
+
+/***/ 193:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("string_decoder");
+
+/***/ }),
+
+/***/ 557:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("timers");
+
+/***/ }),
+
+/***/ 756:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("tls");
+
+/***/ }),
+
+/***/ 23:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("util");
+
+/***/ })
+
+/******/ });
+/************************************************************************/
+/******/ // The module cache
+/******/ var __webpack_module_cache__ = {};
+/******/ 
+/******/ // The require function
+/******/ function __nccwpck_require__(moduleId) {
+/******/ 	// Check if module is in cache
+/******/ 	var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 	if (cachedModule !== undefined) {
+/******/ 		return cachedModule.exports;
+/******/ 	}
+/******/ 	// Create a new module (and put it into the cache)
+/******/ 	var module = __webpack_module_cache__[moduleId] = {
+/******/ 		// no module.id needed
+/******/ 		// no module.loaded needed
+/******/ 		exports: {}
+/******/ 	};
+/******/ 
+/******/ 	// Execute the module function
+/******/ 	var threw = true;
+/******/ 	try {
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require__);
+/******/ 		threw = false;
+/******/ 	} finally {
+/******/ 		if(threw) delete __webpack_module_cache__[moduleId];
+/******/ 	}
+/******/ 
+/******/ 	// Return the exports of the module
+/******/ 	return module.exports;
+/******/ }
+/******/ 
+/************************************************************************/
+/******/ /* webpack/runtime/compat */
+/******/ 
+/******/ if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = new URL('.', import.meta.url).pathname.slice(import.meta.url.match(/^file:\/\/\/\w:/) ? 1 : 0, -1) + "/";
+/******/ 
+/************************************************************************/
+var __webpack_exports__ = {};
+
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __nccwpck_require__(484);
+// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
+var exec = __nccwpck_require__(236);
+// EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
+var io = __nccwpck_require__(994);
+;// CONCATENATED MODULE: ./wrapper/lib/output-listener.js
 class OutputListener {
   constructor() {
     this._buff = [];
@@ -3416,185 +3542,29 @@ class OutputListener {
   }
 }
 
-module.exports = OutputListener;
+/* harmony default export */ const output_listener = (OutputListener);
+
+// EXTERNAL MODULE: external "path"
+var external_path_ = __nccwpck_require__(928);
+;// CONCATENATED MODULE: ./wrapper/lib/tflint-bin.js
 
 
-/***/ }),
+const pathToCLI = [process.env.TFLINT_CLI_PATH, `tflint-bin`].join(external_path_.sep);
 
-/***/ 969:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+/* harmony default export */ const tflint_bin = (pathToCLI);
 
-const path = __nccwpck_require__(928);
-
-module.exports = (() => {
-  return [process.env.TFLINT_CLI_PATH, `tflint-bin`].join(path.sep);
-})();
+;// CONCATENATED MODULE: ./wrapper/tflint.js
 
 
-/***/ }),
 
-/***/ 613:
-/***/ ((module) => {
 
-"use strict";
-module.exports = require("assert");
 
-/***/ }),
 
-/***/ 317:
-/***/ ((module) => {
 
-"use strict";
-module.exports = require("child_process");
-
-/***/ }),
-
-/***/ 982:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("crypto");
-
-/***/ }),
-
-/***/ 434:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("events");
-
-/***/ }),
-
-/***/ 896:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("fs");
-
-/***/ }),
-
-/***/ 611:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("http");
-
-/***/ }),
-
-/***/ 692:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("https");
-
-/***/ }),
-
-/***/ 278:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("net");
-
-/***/ }),
-
-/***/ 857:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("os");
-
-/***/ }),
-
-/***/ 928:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("path");
-
-/***/ }),
-
-/***/ 193:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("string_decoder");
-
-/***/ }),
-
-/***/ 557:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("timers");
-
-/***/ }),
-
-/***/ 756:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("tls");
-
-/***/ }),
-
-/***/ 23:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("util");
-
-/***/ })
-
-/******/ 	});
-/************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __nccwpck_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		var threw = true;
-/******/ 		try {
-/******/ 			__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require__);
-/******/ 			threw = false;
-/******/ 		} finally {
-/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
-/******/ 		}
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/ 	
-/************************************************************************/
-/******/ 	/* webpack/runtime/compat */
-/******/ 	
-/******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
-/******/ 	
-/************************************************************************/
-var __webpack_exports__ = {};
-
-const core = __nccwpck_require__(484);
-const { exec } = __nccwpck_require__(236);
-const io = __nccwpck_require__(994);
-
-const OutputListener = __nccwpck_require__(16);
-const pathToCLI = __nccwpck_require__(969);
 
 async function checkTflint() {
   // throws if `which` does not find a result
-  return io.which(pathToCLI, true);
+  return io.which(tflint_bin, true);
 }
 
 (async () => {
@@ -3602,8 +3572,8 @@ async function checkTflint() {
   await checkTflint();
 
   // Create listeners to receive output (in memory) as well
-  const stdout = new OutputListener();
-  const stderr = new OutputListener();
+  const stdout = new output_listener();
+  const stderr = new output_listener();
   const listeners = {
     stdout: stdout.listener,
     stderr: stderr.listener,
@@ -3615,7 +3585,7 @@ async function checkTflint() {
     listeners,
     ignoreReturnCode: true,
   };
-  const exitCode = await exec(pathToCLI, args, options);
+  const exitCode = await (0,exec.exec)(tflint_bin, args, options);
   core.debug(`tflint exited with code ${exitCode}.`);
   core.debug(`stdout: ${stdout.contents}`);
   core.debug(`stderr: ${stderr.contents}`);
@@ -3636,6 +3606,3 @@ async function checkTflint() {
   core.setFailed(`TFLint exited with code ${exitCode}.`);
 })();
 
-module.exports = __webpack_exports__;
-/******/ })()
-;

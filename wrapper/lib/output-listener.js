@@ -16,4 +16,4 @@ class OutputListener {
   }
 }
 
-module.exports = OutputListener;
+export default OutputListener;

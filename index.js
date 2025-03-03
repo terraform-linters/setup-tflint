@@ -1,11 +1,16 @@
-const core = require('@actions/core');
+import core from '@actions/core';
 
-const setup = require('./src/setup-tflint');
+import setup from './src/setup-tflint.js';
 
-(async () => {
+async function run() {
   try {
     await setup();
   } catch (error) {
     core.setFailed(error.message);
   }
-})();
+}
+
+run();
+
+// Export the run function for testing
+export { run };

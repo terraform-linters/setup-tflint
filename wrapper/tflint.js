@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-const core = require('@actions/core');
-const { exec } = require('@actions/exec');
-const io = require('@actions/io');
+import core from '@actions/core';
+import { exec } from '@actions/exec';
+import io from '@actions/io';
 
-const OutputListener = require('./lib/output-listener');
-const pathToCLI = require('./lib/tflint-bin');
+import OutputListener from './lib/output-listener.js';
+import pathToCLI from './lib/tflint-bin.js';
 
 async function checkTflint() {
   // throws if `which` does not find a result

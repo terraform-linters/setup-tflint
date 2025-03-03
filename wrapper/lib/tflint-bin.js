@@ -1,5 +1,5 @@
-const path = require('path');
+import path from 'path';
 
-module.exports = (() => {
-  return [process.env.TFLINT_CLI_PATH, `tflint-bin`].join(path.sep);
-})();
+const pathToCLI = [process.env.TFLINT_CLI_PATH, `tflint-bin`].join(path.sep);
+
+export default pathToCLI;
