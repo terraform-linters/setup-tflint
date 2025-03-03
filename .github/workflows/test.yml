@@ -66,7 +66,7 @@ jobs:
       run: tflint -v
 
   integration-versions:
-    name: 'Integration test (tflint_version: ${{ matrix.tflint_version }})'
+    name: 'Integration test: version (tflint_version: ${{ matrix.tflint_version }})'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -90,6 +90,7 @@ jobs:
 
   integration-checksum:
     runs-on: ubuntu-latest
+    name: 'Integration test: checksum'
 
     steps:
       - uses: actions/checkout@v4
@@ -104,7 +105,7 @@ jobs:
       - run: tflint -v
 
   integration-matchers:
-    name: 'Integration test (tflint_version: ${{ matrix.tflint_version }})'
+    name: 'Integration test: matchers (tflint_version: ${{ matrix.tflint_version }})'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -121,7 +122,7 @@ jobs:
       run: tflint -f compact --force
 
   integration-wrapper:
-    name: 'Integration test (tflint_version: ${{ matrix.tflint_version }})'
+    name: 'Integration test: wrapper (tflint_version: ${{ matrix.tflint_version }})'
     runs-on: ubuntu-latest
     strategy:
       matrix:
