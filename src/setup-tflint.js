@@ -2,17 +2,12 @@ import crypto from 'crypto';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { dirname } from 'path';
 import { pipeline } from 'stream/promises';
-import { fileURLToPath } from 'url';
 
 import core from '@actions/core';
 import io from '@actions/io';
 import * as tc from '@actions/tool-cache';
 import { Octokit } from '@octokit/rest';
-
-const __filename = fileURLToPath(import.meta.url);
-const localDir = dirname(__filename);
 
 /**
  * Get the GitHub platform architecture name
@@ -112,7 +107,7 @@ async function installWrapper(pathToCLI) {
 
   // Install wrapper as tflint
   try {
-    source = path.resolve([localDir, '..', 'wrapper', 'dist', 'index.js'].join(path.sep));
+    source = path.resolve([import.meta.dirname, '..', 'wrapper', 'dist', 'index.js'].join(path.sep));
     target = [pathToCLI, 'tflint'].join(path.sep);
     core.debug(`Copying ${source} to ${target}.`);
     await io.cp(source, target);
@@ -145,7 +140,7 @@ async function run() {
 
     core.addPath(pathToCLI);
 
-    const matchersPath = path.join(localDir, '..', '.github', 'matchers.json');
+    const matchersPath = path.join(import.meta.dirname, '..', '.github', 'matchers.json');
     core.info(`##[add-matcher]${matchersPath}`);
 
     return version;

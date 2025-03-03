@@ -1,6 +1,6 @@
 import core from '@actions/core';
 
-import setup from './src/setup-tflint';
+import setup from './src/setup-tflint.js';
 
 async function run() {
   try {

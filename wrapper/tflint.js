@@ -4,8 +4,8 @@ import core from '@actions/core';
 import { exec } from '@actions/exec';
 import io from '@actions/io';
 
-import OutputListener from './lib/output-listener';
-import pathToCLI from './lib/tflint-bin';
+import OutputListener from './lib/output-listener.js';
+import pathToCLI from './lib/tflint-bin.js';
 
 async function checkTflint() {
   // throws if `which` does not find a result
