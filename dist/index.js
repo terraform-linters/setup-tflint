@@ -10176,10 +10176,10 @@ async function installWrapper(pathToCLI) {
 
   // Install wrapper as tflint
   try {
-    source = external_path_.resolve([import.meta.dirname, '..', 'wrapper', 'dist', 'index.js'].join(external_path_.sep));
+    source = __nccwpck_require__.ab + "index1.js";
     target = [pathToCLI, 'tflint'].join(external_path_.sep);
     core.debug(`Copying ${source} to ${target}.`);
-    await io.cp(source, target);
+    await io.cp(__nccwpck_require__.ab + "index1.js", target);
   } catch (e) {
     core.error(`Unable to copy ${source} to ${target}.`);
     throw e;
@@ -10209,7 +10209,7 @@ async function run() {
 
     core.addPath(pathToCLI);
 
-    const matchersPath = external_path_.join(import.meta.dirname, '..', '.github', 'matchers.json');
+    const matchersPath = __nccwpck_require__.ab + "matchers.json";
     core.info(`##[add-matcher]${matchersPath}`);
 
     return version;

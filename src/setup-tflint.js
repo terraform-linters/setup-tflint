@@ -107,7 +107,7 @@ async function installWrapper(pathToCLI) {
 
   // Install wrapper as tflint
   try {
-    source = path.resolve([import.meta.dirname, '..', 'wrapper', 'dist', 'index.js'].join(path.sep));
+    source = path.resolve([__dirname, '..', 'wrapper', 'dist', 'index.js'].join(path.sep));
     target = [pathToCLI, 'tflint'].join(path.sep);
     core.debug(`Copying ${source} to ${target}.`);
     await io.cp(source, target);
@@ -140,7 +140,7 @@ async function run() {
 
     core.addPath(pathToCLI);
 
-    const matchersPath = path.join(import.meta.dirname, '..', '.github', 'matchers.json');
+    const matchersPath = path.join(__dirname, '..', '.github', 'matchers.json');
     core.info(`##[add-matcher]${matchersPath}`);
 
     return version;
