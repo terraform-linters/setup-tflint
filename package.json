@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "lint": "eslint --fix . src",
+    "lint": "eslint",
     "build": "ncc build wrapper/tflint.js --out wrapper/dist && ncc build index.js -o dist --no-source-map-register",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },

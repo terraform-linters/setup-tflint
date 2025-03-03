@@ -73,7 +73,9 @@ async function downloadCLI(url, checksums) {
     const checksum = await fileSHA256(pathToCLIZip);
 
     if (!checksums.includes(checksum)) {
-      throw new Error(`Mismatched checksum: expected one of ${checksums.join(', ')}, but got ${checksum}`);
+      throw new Error(
+        `Mismatched checksum: expected one of ${checksums.join(', ')}, but got ${checksum}`,
+      );
     }
 
     core.debug('SHA256 hash verified successfully');
@@ -92,21 +94,18 @@ async function downloadCLI(url, checksums) {
 
 async function installWrapper(pathToCLI) {
   // Move the original tflint binary to a new location
-  await io.mv(
-    path.join(pathToCLI, 'tflint'),
-    path.join(pathToCLI, 'tflint-bin')
-  );
+  await io.mv(path.join(pathToCLI, 'tflint'), path.join(pathToCLI, 'tflint-bin'));
 
   // Copy the wrapper script to the tflint binary location
   await io.cp(
     path.resolve(path.join(__dirname, '..', 'wrapper', 'dist', 'index.js')),
-    path.join(pathToCLI, 'tflint')
+    path.join(pathToCLI, 'tflint'),
   );
 
   // Copy the wrapper script package.json to the tflint binary location
   await io.cp(
     path.resolve(path.join(__dirname, '..', 'wrapper', 'dist', 'package.json')),
-    path.join(pathToCLI, 'package.json')
+    path.join(pathToCLI, 'package.json'),
   );
 
   core.exportVariable('TFLINT_CLI_PATH', pathToCLI);
