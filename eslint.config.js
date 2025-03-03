@@ -96,7 +96,18 @@ export default [
         {
           blankLine: 'always',
 
-          prev: ['directive', 'block', 'block-like', 'multiline-block-like', 'cjs-export', 'cjs-import', 'class', 'export', 'import', 'if'],
+          prev: [
+            'directive',
+            'block',
+            'block-like',
+            'multiline-block-like',
+            'cjs-export',
+            'cjs-import',
+            'class',
+            'export',
+            'import',
+            'if',
+          ],
 
           next: '*',
         },

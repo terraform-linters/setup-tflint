@@ -25,6 +25,21 @@ jobs:
     - name: Build & Verify
       run: npm run build && git diff --exit-code
 
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+    - uses: actions/cache@v4
+      with:
+
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - run: npm ci
+    - run: npm run lint
+
   unit:
     name: Unit tests
     runs-on: ubuntu-latest
