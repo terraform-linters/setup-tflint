@@ -1,13 +1,15 @@
-const os = require('os');
-const path = require('path');
-const crypto = require('crypto');
-const fs = require('fs');
-const { pipeline } = require('stream/promises')
+import os from 'os';
+import path from 'path';
+import crypto from 'crypto';
+import fs from 'fs';
+import { pipeline } from 'stream/promises';
+import core from '@actions/core';
+import io from '@actions/io';
+import { Octokit } from '@octokit/rest';
 
-const core = require('@actions/core');
-const io = require('@actions/io');
-const tc = require('@actions/tool-cache');
-const { Octokit } = require('@octokit/rest');
+async function getToolCache() {
+  return import('@actions/tool-cache');
+}
 
 /**
  * Get the GitHub platform architecture name
@@ -64,6 +66,7 @@ async function fileSHA256(filePath) {
 }
 
 async function downloadCLI(url, checksums) {
+  const tc = await getToolCache();
   core.debug(`Downloading tflint CLI from ${url}`);
   const pathToCLIZip = await tc.downloadTool(url);
 
@@ -149,4 +152,4 @@ async function run() {
   }
 }
 
-module.exports = run;
+export default run;
