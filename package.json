@@ -43,7 +43,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.26.8",
     "@eslint/compat": "^1.2.7",
-    "@eslint/eslintrc": "^3.3.0",
+    "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.17.0",
     "@vercel/ncc": "^0.38.3",
     "eslint": "^9.21.0",
