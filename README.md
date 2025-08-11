@@ -129,9 +129,8 @@ or specify it explicitly as
 - id: tflint
   run: tflint -f compact
 
-- run: echo ${{ steps.tflint.outputs.stdout }}
-- run: echo ${{ steps.tflint.outputs.stderr }}
-- run: echo ${{ steps.tflint.outputs.exitcode }}
+- if: always()
+  run: echo ${{ steps.tflint.outputs.stdout }}
 ```
 
 ### Checks
