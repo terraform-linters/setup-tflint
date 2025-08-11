@@ -41,12 +41,11 @@ async function checkTflint() {
   core.setOutput('stderr', stderr.contents);
   core.setOutput('exitcode', exitCode.toString(10));
 
-  if (exitCode === 0 || exitCode === 2) {
-    // A exitCode of 0 is considered a success
-    // An exitCode of 2 denotes no errors occurred, but issues found
-    return;
+  if (exitCode !== 0) {
+    // Any non-zero exit code is considered a failure
+    // Exit code 1: Errors in tflint execution
+    // Exit code 2: Issues found above --minimum-failure-severity threshold
+    // Exit code 3+: Other errors
+    core.setFailed(`TFLint exited with code ${exitCode}.`);
   }
-
-  // A non-zero exitCode is considered an error
-  core.setFailed(`TFLint exited with code ${exitCode}.`);
 })();
