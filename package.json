@@ -3,6 +3,9 @@
   "version": "2.1.0",
   "description": "Install and setup TFLint executable",
   "main": "index.js",
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "type": "module",
   "scripts": {
     "lint": "eslint",

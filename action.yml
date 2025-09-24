@@ -24,7 +24,7 @@ outputs:
   exitcode:
     description: The exit code produced by the tflint command. Only available if `tflint_wrapper` is set to `true`.
 runs:
-  using: 'node20'
+  using: 'node24'
   main: 'dist/index.js'
 branding:
   icon: 'terminal'
