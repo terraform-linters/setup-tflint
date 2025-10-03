@@ -93,6 +93,7 @@ jobs:
     steps:
     - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
     - name: Use Action
+      id: setup-tflint
       uses: ./
       with:
         tflint_version: ${{ matrix.tflint_version }}
@@ -105,6 +106,20 @@ jobs:
     - name: Validate
       if: matrix.tflint_version == 'latest'
       run: tflint -v
+    - name: Verify version output
+      run: |
+        if [[ "${{ matrix.tflint_version }}" == "latest" ]]; then
+          expected=$(gh api repos/terraform-linters/tflint/releases/latest --jq '.tag_name' | sed 's/^v//')
+        else
+          version='${{ matrix.tflint_version }}'
+          expected=${version:1}
+        fi
+        if [[ "${{ steps.setup-tflint.outputs.tflint-version }}" != "$expected" ]]; then
+          echo "Expected version output '$expected', got '${{ steps.setup-tflint.outputs.tflint-version }}'"
+          exit 1
+        fi
+      env:
+        GH_TOKEN: ${{ github.token }}
 
   integration-checksum:
     runs-on: ubuntu-latest
