@@ -107,10 +107,13 @@ jobs:
       if: matrix.tflint_version == 'latest'
       run: tflint -v
     - name: Verify version output
-      if: matrix.tflint_version != 'latest'
       run: |
-        version='${{ matrix.tflint_version }}'
-        expected=${version:1}
+        if [[ "${{ matrix.tflint_version }}" == "latest" ]]; then
+          expected=$(gh api repos/terraform-linters/tflint/releases/latest --jq '.tag_name' | sed 's/^v//')
+        else
+          version='${{ matrix.tflint_version }}'
+          expected=${version:1}
+        fi
         if [[ "${{ steps.setup-tflint.outputs.tflint-version }}" != "$expected" ]]; then
           echo "Expected version output '$expected', got '${{ steps.setup-tflint.outputs.tflint-version }}'"
           exit 1
