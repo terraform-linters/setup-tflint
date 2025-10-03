@@ -88934,6 +88934,8 @@ async function restoreCache() {
   const restoreKeys = [keyPrefix];
   const matchedKey = await cache.restoreCache([pluginDir], primaryKey, restoreKeys);
 
+  core.setOutput('cache-hit', Boolean(matchedKey));
+
   if (!matchedKey) {
     core.info('TFLint plugin cache not found');
     return;

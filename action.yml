@@ -31,6 +31,8 @@ inputs:
 outputs:
   tflint-version:
     description: The installed version of TFLint
+  cache-hit:
+    description: A boolean value to indicate a cache entry was found
   stdout:
     description: The output (stdout) produced by the tflint command. Only available if `tflint_wrapper` is set to `true`.
   stderr:
