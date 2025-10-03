@@ -37,6 +37,24 @@ Installs a wrapper script to wrap subsequent calls to `tflint` and expose `stdou
 
 Default: `"false"`
 
+### `cache`
+
+Enable caching of TFLint plugins. When enabled, the action will cache the plugin directory and restore it on subsequent runs based on the hash of your TFLint configuration file(s).
+
+Default: `"false"`
+
+### `tflint_config_path`
+
+Glob pattern for TFLint configuration file(s) used to generate the cache key. All matching files will be hashed together to determine cache validity. Supports glob patterns for monorepo setups.
+
+Default: `".tflint.hcl"`
+
+### `plugin_dir`
+
+Directory where TFLint plugins are installed. See [TFLint plugin configuration](https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/config.md#plugin-directory) for details.
+
+Default: `"~/.tflint.d/plugins"`
+
 ## Outputs
 
 The following outputs are available when the `tflint_wrapper` input is enabled:
@@ -66,16 +84,12 @@ jobs:
     - uses: actions/checkout@v4
       name: Checkout source code
 
-    - uses: actions/cache@v4
-      name: Cache plugin dir
-      with:
-        path: ~/.tflint.d/plugins
-        key: ${{ matrix.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
-
     - uses: terraform-linters/setup-tflint@v6
       name: Setup TFLint
       with:
         tflint_version: v0.52.0
+        cache: true
+
     - name: Show version
       run: tflint --version
 
@@ -131,6 +145,35 @@ or specify it explicitly as
 
 - if: always()
   run: echo ${{ steps.tflint.outputs.stdout }}
+```
+
+### Plugin Caching
+
+```yaml
+- uses: terraform-linters/setup-tflint@v6
+  with:
+    cache: true
+
+- run: tflint --init
+  env:
+    GITHUB_TOKEN: ${{ github.token }}
+
+- run: tflint -f compact
+```
+
+For monorepos with multiple TFLint configurations:
+
+```yaml
+- uses: terraform-linters/setup-tflint@v6
+  with:
+    cache: true
+    tflint_config_path: '**/.tflint.hcl'
+
+- run: tflint --init
+  env:
+    GITHUB_TOKEN: ${{ github.token }}
+
+- run: tflint -f compact
 ```
 
 ### Checks

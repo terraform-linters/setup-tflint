@@ -16,6 +16,18 @@ inputs:
   checksums:
     description: Newline-delimited list of valid checksums (SHA256 hashes) for the downloaded TFLint binary. When set, the action will verify that the binary matches one of these checksums before proceeding.
     required: false
+  cache:
+    description: Enable caching of TFLint plugins
+    default: 'false'
+    required: false
+  tflint_config_path:
+    description: Glob pattern for TFLint config files used to generate cache key
+    default: '.tflint.hcl'
+    required: false
+  plugin_dir:
+    description: Directory where TFLint plugins are installed
+    default: '~/.tflint.d/plugins'
+    required: false
 outputs:
   stdout:
     description: The output (stdout) produced by the tflint command. Only available if `tflint_wrapper` is set to `true`.
@@ -26,6 +38,8 @@ outputs:
 runs:
   using: 'node24'
   main: 'dist/index.js'
+  post: 'dist/post/index.js'
+  post-if: success()
 branding:
   icon: 'terminal'
   color: 'purple'

@@ -165,3 +165,22 @@ jobs:
           else
             echo "TFLint Exit Code captured."
           fi
+
+  integration-cache:
+    name: 'Integration test: cache'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - name: Use Action
+        uses: ./
+        with:
+          cache: true
+          tflint_config_path: .github/workflows/fixtures/.tflint.hcl
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Init TFLint
+        run: tflint --init --config .github/workflows/fixtures/.tflint.hcl
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Verify plugin installed
+        run: test -d ~/.tflint.d/plugins

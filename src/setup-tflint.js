@@ -9,6 +9,8 @@ import io from '@actions/io';
 import * as tc from '@actions/tool-cache';
 import { Octokit } from '@octokit/rest';
 
+import restoreCache from './cache-restore.js';
+
 /**
  * Get the GitHub platform architecture name
  * @param {string} arch - https://nodejs.org/api/os.html#os_os_arch
@@ -113,6 +115,8 @@ async function installWrapper(pathToCLI) {
 
 async function run() {
   try {
+    await restoreCache();
+
     const inputVersion = core.getInput('tflint_version');
     const checksums = core.getMultilineInput('checksums');
     const wrapper = core.getInput('tflint_wrapper') === 'true';
