@@ -85094,6 +85094,8 @@ var external_os_ = __nccwpck_require__(70857);
 var external_path_ = __nccwpck_require__(16928);
 ;// CONCATENATED MODULE: external "stream/promises"
 const promises_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("stream/promises");
+// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
+var exec = __nccwpck_require__(95236);
 // EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
 var io = __nccwpck_require__(94994);
 // EXTERNAL MODULE: ./node_modules/@actions/tool-cache/lib/tool-cache.js
@@ -88958,6 +88960,7 @@ async function restoreCache() {
 
 
 
+
 /**
  * Get the GitHub platform architecture name
  * @param {string} arch - https://nodejs.org/api/os.html#os_os_arch
@@ -88991,7 +88994,6 @@ function getOctokit() {
 
 async function getTFLintVersion(inputVersion) {
   if (!inputVersion || inputVersion === 'latest') {
-    core.debug('Requesting for [latest] version ...');
     const octokit = getOctokit();
     const response = await octokit.repos.getLatestRelease({
       owner: 'terraform-linters',
@@ -89012,8 +89014,9 @@ async function fileSHA256(filePath) {
   return hash.digest('hex');
 }
 
-async function downloadCLI(url, checksums) {
-  core.debug(`Downloading tflint CLI from ${url}`);
+async function downloadCLI(url, checksums, version) {
+  core.info(`Attempting to download ${version}...`);
+  core.info(`Acquiring ${version} from ${url}`);
   const pathToCLIZip = await tool_cache.downloadTool(url);
 
   if (checksums.length > 0) {
@@ -89030,7 +89033,7 @@ async function downloadCLI(url, checksums) {
     core.debug('SHA256 hash verified successfully');
   }
 
-  core.debug('Extracting tflint CLI zip file');
+  core.info('Extracting...');
   const pathToCLI = await tool_cache.extractZip(pathToCLIZip);
   core.debug(`tflint CLI path is ${pathToCLI}.`);
 
@@ -89074,7 +89077,7 @@ async function run() {
     core.debug(`Getting download URL for tflint version ${version}: ${platform} ${arch}`);
     const url = `https://github.com/terraform-linters/tflint/releases/download/${version}/tflint_${platform}_${arch}.zip`;
 
-    const pathToCLI = await downloadCLI(url, checksums);
+    const pathToCLI = await downloadCLI(url, checksums, version);
 
     if (wrapper) {
       await installWrapper(pathToCLI);
@@ -89084,6 +89087,29 @@ async function run() {
 
     const matchersPath = __nccwpck_require__.ab + "matchers.json";
     core.info(`##[add-matcher]${matchersPath}`);
+
+    // Get and output actual installed version
+    try {
+      let stdout = '';
+      await exec.exec('tflint', ['--version'], {
+        listeners: {
+          stdout: (data) => {
+            stdout += data.toString();
+          },
+        },
+      });
+
+      const firstLine = stdout.split('\n')[0];
+      const match = firstLine.match(/TFLint version (.+)/);
+      if (match) {
+        const installedVersion = match[1];
+        core.setOutput('tflint-version', installedVersion);
+      } else {
+        core.warning('Unable to parse tflint version from output');
+      }
+    } catch (error) {
+      core.warning(`Failed to get tflint version: ${error.message}`);
+    }
 
     return version;
   } catch (ex) {

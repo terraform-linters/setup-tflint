@@ -29,6 +29,8 @@ inputs:
     default: '~/.tflint.d/plugins'
     required: false
 outputs:
+  tflint-version:
+    description: The installed version of TFLint
   stdout:
     description: The output (stdout) produced by the tflint command. Only available if `tflint_wrapper` is set to `true`.
   stderr:
