@@ -118,6 +118,8 @@ jobs:
           echo "Expected version output '$expected', got '${{ steps.setup-tflint.outputs.tflint-version }}'"
           exit 1
         fi
+      env:
+        GH_TOKEN: ${{ github.token }}
 
   integration-checksum:
     runs-on: ubuntu-latest
