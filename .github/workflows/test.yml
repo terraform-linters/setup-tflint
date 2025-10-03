@@ -93,6 +93,7 @@ jobs:
     steps:
     - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
     - name: Use Action
+      id: setup-tflint
       uses: ./
       with:
         tflint_version: ${{ matrix.tflint_version }}
@@ -105,6 +106,15 @@ jobs:
     - name: Validate
       if: matrix.tflint_version == 'latest'
       run: tflint -v
+    - name: Verify version output
+      if: matrix.tflint_version != 'latest'
+      run: |
+        version='${{ matrix.tflint_version }}'
+        expected=${version:1}
+        if [[ "${{ steps.setup-tflint.outputs.tflint-version }}" != "$expected" ]]; then
+          echo "Expected version output '$expected', got '${{ steps.setup-tflint.outputs.tflint-version }}'"
+          exit 1
+        fi
 
   integration-checksum:
     runs-on: ubuntu-latest
@@ -184,22 +194,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Verify plugin installed
         run: test -d ~/.tflint.d/plugins
-
-  integration-version-output:
-    name: 'Integration test: version output'
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-      - name: Use Action
-        id: setup-tflint
-        uses: ./
-        with:
-          tflint_version: 'v0.53.0'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Verify version output
-        run: |
-          if [[ "${{ steps.setup-tflint.outputs.tflint-version }}" != "0.53.0" ]]; then
-            echo "Expected version output '0.53.0', got '${{ steps.setup-tflint.outputs.tflint-version }}'"
-            exit 1
-          fi
