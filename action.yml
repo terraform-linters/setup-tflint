@@ -25,7 +25,7 @@ inputs:
     default: '.tflint.hcl'
     required: false
   plugin_dir:
-    description: Directory where TFLint plugins are installed
+    description: Directory where TFLint plugins are installed. Can also be set via TFLINT_PLUGIN_DIR environment variable.
     default: '~/.tflint.d/plugins'
     required: false
 outputs:

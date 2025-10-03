@@ -88898,7 +88898,11 @@ async function restoreCache() {
   }
 
   const configPath = core.getInput('tflint_config_path');
-  const pluginDir = core.getInput('plugin_dir').replace(/^~/, external_os_.homedir());
+  const pluginDir = (
+    core.getInput('plugin_dir') ||
+    process.env.TFLINT_PLUGIN_DIR ||
+    '~/.tflint.d/plugins'
+  ).replace(/^~/, external_os_.homedir());
 
   core.debug(`Resolving config files matching pattern: ${configPath}`);
   const globber = await glob.create(configPath);

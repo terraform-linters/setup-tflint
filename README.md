@@ -53,6 +53,8 @@ Default: `".tflint.hcl"`
 
 Directory where TFLint plugins are installed. See [TFLint plugin configuration](https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/config.md#plugin-directory) for details.
 
+Can also be set via `TFLINT_PLUGIN_DIR` environment variable.
+
 Default: `"~/.tflint.d/plugins"`
 
 ## Outputs
