@@ -13,6 +13,15 @@ import { Octokit } from '@octokit/rest';
 import restoreCache from './cache-restore.js';
 
 /**
+ * Normalize version for tool-cache compatibility
+ * @param {string} version - Version string (e.g., "v0.50.0" or "0.50.0")
+ * @returns {string} - Normalized version without "v" prefix
+ */
+function normalizeVersion(version) {
+  return version.replace(/^v/, '');
+}
+
+/**
  * Get the GitHub platform architecture name
  * @param {string} arch - https://nodejs.org/api/os.html#os_os_arch
  * @returns {string}
@@ -124,14 +133,26 @@ async function run() {
     const version = await getTFLintVersion(inputVersion);
     const platform = mapOS(os.platform());
     const arch = mapArch(os.arch());
+    const normalizedVersion = normalizeVersion(version);
 
-    core.debug(`Getting download URL for tflint version ${version}: ${platform} ${arch}`);
-    const url = `https://github.com/terraform-linters/tflint/releases/download/${version}/tflint_${platform}_${arch}.zip`;
+    // Check if tool is already cached
+    let pathToCLI = tc.find('tflint', normalizedVersion, arch);
+    if (pathToCLI) {
+      core.info(`Found TFLint ${version} in cache @ ${pathToCLI}`);
+    } else {
+      core.debug(`Getting download URL for tflint version ${version}: ${platform} ${arch}`);
+      const url = `https://github.com/terraform-linters/tflint/releases/download/${version}/tflint_${platform}_${arch}.zip`;
 
-    const pathToCLI = await downloadCLI(url, checksums, version);
+      pathToCLI = await downloadCLI(url, checksums, version);
 
-    if (wrapper) {
-      await installWrapper(pathToCLI);
+      if (wrapper) {
+        await installWrapper(pathToCLI);
+      }
+
+      // Cache the tool for future runs
+      core.info('Adding to the tool cache...');
+      pathToCLI = await tc.cacheDir(pathToCLI, 'tflint', normalizedVersion, arch);
+      core.info(`Successfully cached TFLint to ${pathToCLI}`);
     }
 
     core.addPath(pathToCLI);
