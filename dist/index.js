@@ -89055,6 +89055,30 @@ async function downloadCLI(url, checksums, version) {
   return pathToCLI;
 }
 
+async function getInstalledVersion() {
+  try {
+    let stdout = '';
+    await exec.exec('tflint', ['--version'], {
+      listeners: {
+        stdout: (data) => {
+          stdout += data.toString();
+        },
+      },
+    });
+
+    const firstLine = stdout.split('\n')[0];
+    const match = firstLine.match(/TFLint version (.+)/);
+    if (match) {
+      const installedVersion = match[1];
+      core.setOutput('tflint-version', installedVersion);
+    } else {
+      core.warning('Unable to parse tflint version from output');
+    }
+  } catch (error) {
+    core.warning(`Failed to get tflint version: ${error.message}`);
+  }
+}
+
 async function installWrapper(pathToCLI) {
   // Move the original tflint binary to a new location
   await io.mv(external_path_.join(pathToCLI, 'tflint'), external_path_.join(pathToCLI, 'tflint-bin'));
@@ -89096,11 +89120,6 @@ async function run() {
 
       pathToCLI = await downloadCLI(url, checksums, version);
 
-      if (wrapper) {
-        await installWrapper(pathToCLI);
-      }
-
-      // Cache the tool for future runs
       core.info('Adding to the tool cache...');
       pathToCLI = await tool_cache.cacheDir(pathToCLI, 'tflint', normalizedVersion, arch);
       core.info(`Successfully cached TFLint to ${pathToCLI}`);
@@ -89111,27 +89130,11 @@ async function run() {
     const matchersPath = __nccwpck_require__.ab + "matchers.json";
     core.info(`##[add-matcher]${matchersPath}`);
 
-    // Get and output actual installed version
-    try {
-      let stdout = '';
-      await exec.exec('tflint', ['--version'], {
-        listeners: {
-          stdout: (data) => {
-            stdout += data.toString();
-          },
-        },
-      });
+    await getInstalledVersion();
 
-      const firstLine = stdout.split('\n')[0];
-      const match = firstLine.match(/TFLint version (.+)/);
-      if (match) {
-        const installedVersion = match[1];
-        core.setOutput('tflint-version', installedVersion);
-      } else {
-        core.warning('Unable to parse tflint version from output');
-      }
-    } catch (error) {
-      core.warning(`Failed to get tflint version: ${error.message}`);
+    // Must happen after version detection and caching, which depend on the real binary
+    if (wrapper) {
+      await installWrapper(pathToCLI);
     }
 
     return version;

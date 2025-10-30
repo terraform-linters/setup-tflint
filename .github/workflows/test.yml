@@ -164,6 +164,7 @@ jobs:
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Use Action
+        id: setup-tflint
         uses: ./
         with:
           tflint_version: ${{ matrix.tflint_version }}
@@ -179,6 +180,14 @@ jobs:
             exit 1
           else
             echo "TFLint Exit Code captured."
+          fi
+      - name: Verify Version Output
+        run: |
+          if [[ -z "${{ steps.setup-tflint.outputs.tflint-version }}" ]]; then
+            echo "TFLint version output not captured."
+            exit 1
+          else
+            echo "TFLint version captured: ${{ steps.setup-tflint.outputs.tflint-version }}"
           fi
 
   integration-cache:
