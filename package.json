@@ -45,6 +45,9 @@
     "@octokit/rest": "^22.0.1",
     "process": "^0.11.10"
   },
+  "overrides": {
+    "undici": ">=6.23.0"
+  },
   "devDependencies": {
     "@babel/eslint-parser": "^7.28.5",
     "@eslint/compat": "^2.0.0",
