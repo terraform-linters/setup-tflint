@@ -1,5 +1,5 @@
 import * as cache from '@actions/cache';
-import core from '@actions/core';
+import * as core from '@actions/core';
 
 import {
   STATE_CACHE_PRIMARY_KEY,

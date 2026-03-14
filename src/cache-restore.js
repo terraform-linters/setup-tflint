@@ -1,7 +1,7 @@
 import os from 'os';
 
 import * as cache from '@actions/cache';
-import core from '@actions/core';
+import * as core from '@actions/core';
 import * as glob from '@actions/glob';
 
 const STATE_CACHE_PRIMARY_KEY = 'TFLINT_CACHE_KEY';
