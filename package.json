@@ -39,7 +39,7 @@
     "@actions/cache": "^6.0.0",
     "@actions/core": "^2.0.1",
     "@actions/exec": "^2.0.0",
-    "@actions/glob": "^0.5.0",
+    "@actions/glob": "^0.6.1",
     "@actions/io": "^2.0.0",
     "@actions/tool-cache": "^4.0.0",
     "@octokit/rest": "^22.0.1",
