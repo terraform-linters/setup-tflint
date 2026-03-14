@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import core from '@actions/core';
+import * as core from '@actions/core';
 import { exec } from '@actions/exec';
-import io from '@actions/io';
+import * as io from '@actions/io';
 
 import OutputListener from './lib/output-listener.js';
 import pathToCLI from './lib/tflint-bin.js';
