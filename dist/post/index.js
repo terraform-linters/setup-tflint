@@ -52169,6 +52169,9 @@ function arrToStr(arr, options, indentation, matcher, stopNodeExpressions) {
     let xmlStr = "";
     let isPreviousElementTag = false;
 
+    if (options.maxNestedTags && matcher.getDepth() > options.maxNestedTags) {
+        throw new Error("Maximum nested tags exceeded");
+    }
 
     if (!Array.isArray(arr)) {
         // Non-array values (e.g. string tag values) should be treated as text content
@@ -52245,6 +52248,7 @@ function arrToStr(arr, options, indentation, matcher, stopNodeExpressions) {
         if (isStopNode) {
             tagValue = orderedJs2Xml_getRawContent(tagObj[tagName], options);
         } else {
+
             tagValue = arrToStr(tagObj[tagName], options, newIdentation, matcher, stopNodeExpressions);
         }
 
@@ -52476,6 +52480,7 @@ const defaultOptions = {
   // transformTagName: false,
   // transformAttributeName: false,
   oneListGroup: false,
+  maxNestedTags: 100,
   jPath: true  // When true, callbacks receive string jPath; when false, receive Matcher instance
 };
 
@@ -52551,7 +52556,9 @@ Builder.prototype.build = function (jObj) {
 Builder.prototype.j2x = function (jObj, level, matcher) {
   let attrStr = '';
   let val = '';
-
+  if (this.options.maxNestedTags && matcher.getDepth() >= this.options.maxNestedTags) {
+    throw new Error("Maximum nested tags exceeded");
+  }
   // Get jPath based on option: string for backward compatibility, or Matcher for new features
   const jPath = this.options.jPath ? matcher.toString() : matcher;
 
@@ -53577,12 +53584,12 @@ function normalizeProcessEntities(value) {
   // Object config - merge with defaults
   if (typeof value === 'object' && value !== null) {
     return {
-      enabled: value.enabled !== false, // default true if not specified
-      maxEntitySize: value.maxEntitySize ?? 10000,
-      maxExpansionDepth: value.maxExpansionDepth ?? 10,
-      maxTotalExpansions: value.maxTotalExpansions ?? 1000,
-      maxExpandedLength: value.maxExpandedLength ?? 100000,
-      maxEntityCount: value.maxEntityCount ?? 100,
+      enabled: value.enabled !== false,
+      maxEntitySize: Math.max(1, value.maxEntitySize ?? 10000),
+      maxExpansionDepth: Math.max(1, value.maxExpansionDepth ?? 10),
+      maxTotalExpansions: Math.max(1, value.maxTotalExpansions ?? 1000),
+      maxExpandedLength: Math.max(1, value.maxExpandedLength ?? 100000),
+      maxEntityCount: Math.max(1, value.maxEntityCount ?? 100),
       allowedTags: value.allowedTags ?? null,
       tagFilter: value.tagFilter ?? null
     };
@@ -53704,13 +53711,14 @@ class DocTypeReader {
                         [entityName, val, i] = this.readEntityExp(xmlData, i + 1, this.suppressValidationErr);
                         if (val.indexOf("&") === -1) { //Parameter entities are not supported
                             if (this.options.enabled !== false &&
-                                this.options.maxEntityCount &&
+                                this.options.maxEntityCount != null &&
                                 entityCount >= this.options.maxEntityCount) {
                                 throw new Error(
                                     `Entity count (${entityCount + 1}) exceeds maximum allowed (${this.options.maxEntityCount})`
                                 );
                             }
-                            const escaped = entityName.replace(/[.\-+*:]/g, '\\.');
+                            //const escaped = entityName.replace(/[.\-+*:]/g, '\\.');
+                            const escaped = entityName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                             entities[entityName] = {
                                 regx: RegExp(`&${escaped};`, "g"),
                                 val: val
@@ -53775,11 +53783,12 @@ class DocTypeReader {
         i = skipWhitespace(xmlData, i);
 
         // Read entity name
-        let entityName = "";
+        const startIndex = i;
         while (i < xmlData.length && !/\s/.test(xmlData[i]) && xmlData[i] !== '"' && xmlData[i] !== "'") {
-            entityName += xmlData[i];
             i++;
         }
+        let entityName = xmlData.substring(startIndex, i);
+
         validateEntityName(entityName);
 
         // Skip whitespace after entity name
@@ -53800,7 +53809,7 @@ class DocTypeReader {
 
         // Validate entity size
         if (this.options.enabled !== false &&
-            this.options.maxEntitySize &&
+            this.options.maxEntitySize != null &&
             entityValue.length > this.options.maxEntitySize) {
             throw new Error(
                 `Entity "${entityName}" size (${entityValue.length}) exceeds maximum allowed size (${this.options.maxEntitySize})`
@@ -53816,11 +53825,13 @@ class DocTypeReader {
         i = skipWhitespace(xmlData, i);
 
         // Read notation name
-        let notationName = "";
+
+        const startIndex = i;
         while (i < xmlData.length && !/\s/.test(xmlData[i])) {
-            notationName += xmlData[i];
             i++;
         }
+        let notationName = xmlData.substring(startIndex, i);
+
         !this.suppressValidationErr && validateEntityName(notationName);
 
         // Skip whitespace after notation name
@@ -53870,10 +53881,11 @@ class DocTypeReader {
         }
         i++;
 
+        const startIndex = i;
         while (i < xmlData.length && xmlData[i] !== startChar) {
-            identifierVal += xmlData[i];
             i++;
         }
+        identifierVal = xmlData.substring(startIndex, i);
 
         if (xmlData[i] !== startChar) {
             throw new Error(`Unterminated ${type} value`);
@@ -53893,11 +53905,11 @@ class DocTypeReader {
         i = skipWhitespace(xmlData, i);
 
         // Read element name
-        let elementName = "";
+        const startIndex = i;
         while (i < xmlData.length && !/\s/.test(xmlData[i])) {
-            elementName += xmlData[i];
             i++;
         }
+        let elementName = xmlData.substring(startIndex, i);
 
         // Validate element name
         if (!this.suppressValidationErr && !isName(elementName)) {
@@ -53914,10 +53926,12 @@ class DocTypeReader {
             i++; // Move past '('
 
             // Read content model
+            const startIndex = i;
             while (i < xmlData.length && xmlData[i] !== ")") {
-                contentModel += xmlData[i];
                 i++;
             }
+            contentModel = xmlData.substring(startIndex, i);
+
             if (xmlData[i] !== ")") {
                 throw new Error("Unterminated content model");
             }
@@ -53938,11 +53952,11 @@ class DocTypeReader {
         i = skipWhitespace(xmlData, i);
 
         // Read element name
-        let elementName = "";
+        let startIndex = i;
         while (i < xmlData.length && !/\s/.test(xmlData[i])) {
-            elementName += xmlData[i];
             i++;
         }
+        let elementName = xmlData.substring(startIndex, i);
 
         // Validate element name
         validateEntityName(elementName)
@@ -53951,11 +53965,11 @@ class DocTypeReader {
         i = skipWhitespace(xmlData, i);
 
         // Read attribute name
-        let attributeName = "";
+        startIndex = i;
         while (i < xmlData.length && !/\s/.test(xmlData[i])) {
-            attributeName += xmlData[i];
             i++;
         }
+        let attributeName = xmlData.substring(startIndex, i);
 
         // Validate attribute name
         if (!validateEntityName(attributeName)) {
@@ -53983,11 +53997,13 @@ class DocTypeReader {
             // Read the list of allowed notations
             let allowedNotations = [];
             while (i < xmlData.length && xmlData[i] !== ")") {
-                let notation = "";
+
+
+                const startIndex = i;
                 while (i < xmlData.length && xmlData[i] !== "|" && xmlData[i] !== ")") {
-                    notation += xmlData[i];
                     i++;
                 }
+                let notation = xmlData.substring(startIndex, i);
 
                 // Validate notation name
                 notation = notation.trim();
@@ -54013,10 +54029,11 @@ class DocTypeReader {
             attributeType += " (" + allowedNotations.join("|") + ")";
         } else {
             // Handle simple types (e.g., CDATA, ID, IDREF, etc.)
+            const startIndex = i;
             while (i < xmlData.length && !/\s/.test(xmlData[i])) {
-                attributeType += xmlData[i];
                 i++;
             }
+            attributeType += xmlData.substring(startIndex, i);
 
             // Validate simple attribute type
             const validTypes = ["CDATA", "ID", "IDREF", "IDREFS", "ENTITY", "ENTITIES", "NMTOKEN", "NMTOKENS"];
@@ -54674,6 +54691,8 @@ const parseXml = function (xmlData) {
         if (this.options.strictReservedNames &&
           (tagName === this.options.commentPropName
             || tagName === this.options.cdataPropName
+            || tagName === this.options.textNodeName
+            || tagName === this.options.attributesGroupName
           )) {
           throw new Error(`Invalid tag name: ${tagName}`);
         }
@@ -54873,7 +54892,7 @@ function OrderedObjParser_replaceEntitiesValue(val, tagName, jPath) {
   }
 
   // Replace DOCTYPE entities
-  for (let entityName in this.docTypeEntities) {
+  for (const entityName of Object.keys(this.docTypeEntities)) {
     const entity = this.docTypeEntities[entityName];
     const matches = val.match(entity.regx);
 
@@ -54905,19 +54924,38 @@ function OrderedObjParser_replaceEntitiesValue(val, tagName, jPath) {
       }
     }
   }
-  if (val.indexOf('&') === -1) return val;  // Early exit
-
   // Replace standard entities
-  for (let entityName in this.lastEntities) {
+  for (const entityName of Object.keys(this.lastEntities)) {
     const entity = this.lastEntities[entityName];
+    const matches = val.match(entity.regex);
+    if (matches) {
+      this.entityExpansionCount += matches.length;
+      if (entityConfig.maxTotalExpansions &&
+        this.entityExpansionCount > entityConfig.maxTotalExpansions) {
+        throw new Error(
+          `Entity expansion limit exceeded: ${this.entityExpansionCount} > ${entityConfig.maxTotalExpansions}`
+        );
+      }
+    }
     val = val.replace(entity.regex, entity.val);
   }
-  if (val.indexOf('&') === -1) return val;  // Early exit
+  if (val.indexOf('&') === -1) return val;
 
   // Replace HTML entities if enabled
   if (this.options.htmlEntities) {
-    for (let entityName in this.htmlEntities) {
+    for (const entityName of Object.keys(this.htmlEntities)) {
       const entity = this.htmlEntities[entityName];
+      const matches = val.match(entity.regex);
+      if (matches) {
+        //console.log(matches);
+        this.entityExpansionCount += matches.length;
+        if (entityConfig.maxTotalExpansions &&
+          this.entityExpansionCount > entityConfig.maxTotalExpansions) {
+          throw new Error(
+            `Entity expansion limit exceeded: ${this.entityExpansionCount} > ${entityConfig.maxTotalExpansions}`
+          );
+        }
+      }
       val = val.replace(entity.regex, entity.val);
     }
   }
