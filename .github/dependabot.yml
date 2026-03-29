@@ -14,5 +14,10 @@ updates:
       actions:
         patterns:
           - "@actions/*"
+      eslint:
+        patterns:
+          - "eslint"
+          - "eslint-*"
+          - "@eslint/*"
     cooldown:
       default-days: 5
