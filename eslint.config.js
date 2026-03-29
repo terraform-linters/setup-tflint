@@ -3,7 +3,6 @@ import js from '@eslint/js';
 import importPlugin from 'eslint-plugin-import-x';
 import jest from 'eslint-plugin-jest';
 import jsdoc from 'eslint-plugin-jsdoc';
-import promise from 'eslint-plugin-promise';
 import security from 'eslint-plugin-security';
 import globals from 'globals';
 
@@ -22,7 +21,6 @@ export default [
     plugins: {
       jsdoc,
       jest,
-      promise,
       security,
       'import-x': importPlugin,
     },
@@ -176,18 +174,6 @@ export default [
       'jsdoc/require-returns-description': 'off',
       'jsdoc/require-returns-type': 'error',
       'jsdoc/valid-types': 'error',
-      'promise/always-return': 'error',
-      'promise/always-catch': 'off',
-
-      'promise/catch-or-return': [
-        'error',
-        {
-          allowThen: true,
-        },
-      ],
-
-      'promise/no-native': 'off',
-      'promise/param-names': 'error',
       'security/detect-buffer-noassert': 'error',
       'security/detect-child-process': 'error',
       'security/detect-disable-mustache-escape': 'error',
