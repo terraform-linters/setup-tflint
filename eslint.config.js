@@ -1,4 +1,3 @@
-import babelParser from '@babel/eslint-parser';
 import { fixupPluginRules } from '@eslint/compat';
 import { FlatCompat } from '@eslint/eslintrc';
 import js from '@eslint/js';
@@ -34,11 +33,9 @@ export default [
         ...globals.node,
       },
 
-      parser: babelParser,
       sourceType: 'module',
 
       parserOptions: {
-        requireConfigFile: false,
         sourceType: 'module',
       },
     },
