@@ -1,7 +1,6 @@
-import { fixupPluginRules } from '@eslint/compat';
 import { FlatCompat } from '@eslint/eslintrc';
 import js from '@eslint/js';
-import _import from 'eslint-plugin-import';
+import importPlugin from 'eslint-plugin-import-x';
 import jest from 'eslint-plugin-jest';
 import jsdoc from 'eslint-plugin-jsdoc';
 import promise from 'eslint-plugin-promise';
@@ -25,7 +24,7 @@ export default [
       jest,
       promise,
       security,
-      import: fixupPluginRules(_import),
+      'import-x': importPlugin,
     },
 
     languageOptions: {
@@ -41,7 +40,7 @@ export default [
     },
 
     settings: {
-      'import/resolver': {
+      'import-x/resolver': {
         node: {
           extensions: ['.js', '.ts'],
         },
@@ -145,9 +144,9 @@ export default [
       'no-empty-function': 'error',
       'valid-jsdoc': 'off',
       yoda: 'error',
-      'import/no-unresolved': 'off',
+      'import-x/no-unresolved': 'off',
 
-      'import/order': [
+      'import-x/order': [
         'error',
         {
           'newlines-between': 'always',
