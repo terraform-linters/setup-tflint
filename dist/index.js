@@ -49621,6 +49621,16 @@ const dist_src_Octokit = Octokit.plugin(requestLog, legacyRestEndpointMethods, p
 );
 
 
+;// CONCATENATED MODULE: ./wrapper/lib/tflint-protocol.js
+
+
+const BIN_SUFFIX = 'tflint-bin';
+const CLI_PATH_ENV = 'TFLINT_CLI_PATH';
+
+function resolveBinPath(dir) {
+  return [dir, BIN_SUFFIX].join(path.sep);
+}
+
 ;// CONCATENATED MODULE: ./node_modules/@actions/cache/node_modules/@actions/glob/lib/internal-glob-options-helper.js
 
 /**
@@ -100116,6 +100126,8 @@ async function resolveReleaseTarget({
 
 
 
+
+
 function getOctokit() {
   return new dist_src_Octokit({
     auth: getInput('github_token'),
@@ -100158,7 +100170,7 @@ async function getInstalledVersion() {
 
 async function installWrapper(pathToCLI) {
   // Move the original tflint binary to a new location
-  await mv(external_path_.join(pathToCLI, 'tflint'), external_path_.join(pathToCLI, 'tflint-bin'));
+  await mv(external_path_.join(pathToCLI, 'tflint'), external_path_.join(pathToCLI, BIN_SUFFIX));
 
   // Copy the wrapper script to the tflint binary location
   await io_cp(
@@ -100172,7 +100184,7 @@ async function installWrapper(pathToCLI) {
     external_path_.join(pathToCLI, 'package.json'),
   );
 
-  exportVariable('TFLINT_CLI_PATH', pathToCLI);
+  exportVariable(CLI_PATH_ENV, pathToCLI);
 }
 
 async function run() {

@@ -30915,12 +30915,20 @@ class OutputListener {
 
 /* harmony default export */ const output_listener = (OutputListener);
 
+;// CONCATENATED MODULE: ./wrapper/lib/tflint-protocol.js
+
+
+const BIN_SUFFIX = 'tflint-bin';
+const CLI_PATH_ENV = 'TFLINT_CLI_PATH';
+
+function resolveBinPath(dir) {
+  return [dir, BIN_SUFFIX].join(external_path_namespaceObject.sep);
+}
+
 ;// CONCATENATED MODULE: ./wrapper/lib/tflint-bin.js
 
 
-const pathToCLI = [process.env.TFLINT_CLI_PATH, `tflint-bin`].join(external_path_namespaceObject.sep);
-
-/* harmony default export */ const tflint_bin = (pathToCLI);
+/* harmony default export */ const tflint_bin = (resolveBinPath(process.env[CLI_PATH_ENV]));
 
 ;// CONCATENATED MODULE: ./wrapper/tflint.js
 
