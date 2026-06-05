@@ -205,8 +205,30 @@ This action supports [Problem Matchers](https://github.com/actions/toolkit/blob/
 
 ## Releasing
 
-To create a new version:
+`master` does not contain the built `dist/` bundle. The
+[`Release`](.github/workflows/release.yml) workflow builds it, tags it, and
+publishes the GitHub Release.
+
+Run the workflow from the Actions tab (or with `gh`). Pass an explicit version
+or an increment (`major`/`minor`/`patch`); an increment is computed from the
+latest release tag:
 
 ```sh
-npm version $inc && git push --follow-tags
+gh workflow run release.yml -f version=minor
+gh workflow run release.yml -f version=v6.4.0
 ```
+
+The workflow checks out `master`, sets `package.json` to the release version,
+runs `npm run build`, and commits the bump and `dist/` onto a build commit. It
+creates the release tag at that commit and publishes the release as the last
+step, so the tag is never moved afterward. This keeps the release
+[immutable](https://docs.github.com/en/actions/how-tos/create-and-publish-actions/using-immutable-releases-and-tags-to-manage-your-actions-releases):
+once published, GitHub locks the release tag to its commit.
+
+The bump and `dist/` live on the release tag, not on `master`. CI does not push
+to `master`, and an increment reads the latest release tag to compute the next
+version.
+
+The floating `vMAJOR` and `vMAJOR.MINOR` tags carry no release, so the workflow
+repoints them to the build commit after publishing. Consumers pinning `@v6` are
+unaffected.
