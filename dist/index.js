@@ -44845,8 +44845,6 @@ function getIDToken(aud) {
  */
 
 //# sourceMappingURL=core.js.map
-;// CONCATENATED MODULE: external "stream/promises"
-const promises_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("stream/promises");
 // EXTERNAL MODULE: ./node_modules/@actions/tool-cache/node_modules/semver/index.js
 var node_modules_semver = __nccwpck_require__(885);
 ;// CONCATENATED MODULE: ./node_modules/@actions/tool-cache/lib/manifest.js
@@ -99889,7 +99887,9 @@ async function cache_restore_restoreCache() {
 /* harmony default export */ const cache_restore = (cache_restore_restoreCache);
 
 
-;// CONCATENATED MODULE: ./src/setup-tflint.js
+;// CONCATENATED MODULE: external "stream/promises"
+const promises_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("stream/promises");
+;// CONCATENATED MODULE: ./src/installer.js
 
 
 
@@ -99897,13 +99897,71 @@ async function cache_restore_restoreCache() {
 
 
 
+/**
+ * Compute the SHA256 hash of a file
+ * @param {string} filePath - Path to the file to hash
+ * @returns {Promise<string>} - Hex-encoded SHA256 digest
+ */
+async function fileSHA256(filePath) {
+  const hash = external_crypto_namespaceObject.createHash('sha256');
+  const fileStream = external_fs_namespaceObject.createReadStream(filePath); // eslint-disable-line security/detect-non-literal-fs-filename
 
+  await (0,promises_namespaceObject.pipeline)(fileStream, hash);
+  return hash.digest('hex');
+}
 
+/**
+ * Verify a checksum against the list of allowed checksums
+ * @param {string} checksum - The computed checksum
+ * @param {string[]} checksums - Allowed checksums; empty list skips verification
+ * @returns {void}
+ */
+function verifyChecksum(checksum, checksums) {
+  if (checksums.length === 0) {
+    return;
+  }
 
+  if (!checksums.includes(checksum)) {
+    throw new Error(
+      `Mismatched checksum: expected one of ${checksums.join(', ')}, but got ${checksum}`,
+    );
+  }
+}
 
+/**
+ * Download, verify, and extract the tflint CLI
+ * @param {string} url - Release asset download URL
+ * @param {string[]} checksums - Allowed checksums; empty list skips verification
+ * @param {string} version - Version being installed (for logging)
+ * @returns {Promise<string>} - Path to the extracted CLI directory
+ */
+async function downloadCLI(url, checksums, version) {
+  info(`Attempting to download ${version}...`);
+  info(`Acquiring ${version} from ${url}`);
+  const pathToCLIZip = await downloadTool(url);
 
+  if (checksums.length > 0) {
+    core_debug('Verifying checksum of downloaded file');
 
+    const checksum = await fileSHA256(pathToCLIZip);
 
+    verifyChecksum(checksum, checksums);
+
+    core_debug('SHA256 hash verified successfully');
+  }
+
+  info('Extracting...');
+  const pathToCLI = await extractZip(pathToCLIZip);
+  core_debug(`tflint CLI path is ${pathToCLI}.`);
+
+  if (!pathToCLIZip || !pathToCLI) {
+    throw new Error(`Unable to download tflint from ${url}`);
+  }
+
+  return pathToCLI;
+}
+
+;// CONCATENATED MODULE: ./src/release-target.js
 /**
  * Normalize version for tool-cache compatibility
  * @param {string} version - Version string (e.g., "v0.50.0" or "0.50.0")
@@ -99938,62 +99996,69 @@ function mapOS(osPlatform) {
   return mappings[osPlatform] || osPlatform;
 }
 
+/**
+ * Build the release asset download URL for a tflint version
+ * @param {string} version - Release version (with any leading "v")
+ * @param {string} platform - GitHub OS name
+ * @param {string} arch - GitHub architecture name
+ * @returns {string}
+ */
+function buildDownloadUrl(version, platform, arch) {
+  return `https://github.com/terraform-linters/tflint/releases/download/${version}/tflint_${platform}_${arch}.zip`;
+}
+
+/**
+ * Resolve the release version and construct the download target
+ * @param {object} options
+ * @param {string} options.inputVersion - Requested version input ("latest", empty, or explicit)
+ * @param {string} options.platform - GitHub OS name
+ * @param {string} options.arch - GitHub architecture name
+ * @param {Function} options.fetchLatestReleaseName - Injected async fetcher returning the latest release name
+ * @returns {Promise<{version: string, downloadUrl: string}>}
+ */
+async function resolveReleaseTarget({
+  inputVersion,
+  platform,
+  arch,
+  fetchLatestReleaseName,
+}) {
+  const version =
+    !inputVersion || inputVersion === 'latest' ? await fetchLatestReleaseName() : inputVersion;
+
+  return {
+    version,
+    downloadUrl: buildDownloadUrl(version, platform, arch),
+  };
+}
+
+;// CONCATENATED MODULE: ./src/setup-tflint.js
+
+
+
+
+
+
+
+
+
+
+
+
+
 function getOctokit() {
   return new dist_src_Octokit({
     auth: getInput('github_token'),
   });
 }
 
-async function getTFLintVersion(inputVersion) {
-  if (!inputVersion || inputVersion === 'latest') {
-    const octokit = getOctokit();
-    const response = await octokit.repos.getLatestRelease({
-      owner: 'terraform-linters',
-      repo: 'tflint',
-    });
-    core_debug(`... version resolved to [${response.data.name}]`);
-    return response.data.name;
-  }
-
-  return inputVersion;
-}
-
-async function fileSHA256(filePath) {
-  const hash = external_crypto_namespaceObject.createHash('sha256');
-  const fileStream = external_fs_namespaceObject.createReadStream(filePath); // eslint-disable-line security/detect-non-literal-fs-filename
-
-  await (0,promises_namespaceObject.pipeline)(fileStream, hash);
-  return hash.digest('hex');
-}
-
-async function downloadCLI(url, checksums, version) {
-  info(`Attempting to download ${version}...`);
-  info(`Acquiring ${version} from ${url}`);
-  const pathToCLIZip = await downloadTool(url);
-
-  if (checksums.length > 0) {
-    core_debug('Verifying checksum of downloaded file');
-
-    const checksum = await fileSHA256(pathToCLIZip);
-
-    if (!checksums.includes(checksum)) {
-      throw new Error(
-        `Mismatched checksum: expected one of ${checksums.join(', ')}, but got ${checksum}`,
-      );
-    }
-
-    core_debug('SHA256 hash verified successfully');
-  }
-
-  info('Extracting...');
-  const pathToCLI = await extractZip(pathToCLIZip);
-  core_debug(`tflint CLI path is ${pathToCLI}.`);
-
-  if (!pathToCLIZip || !pathToCLI) {
-    throw new Error(`Unable to download tflint from ${url}`);
-  }
-
-  return pathToCLI;
+async function fetchLatestReleaseName() {
+  const octokit = getOctokit();
+  const response = await octokit.repos.getLatestRelease({
+    owner: 'terraform-linters',
+    repo: 'tflint',
+  });
+  core_debug(`... version resolved to [${response.data.name}]`);
+  return response.data.name;
 }
 
 async function getInstalledVersion() {
@@ -100046,9 +100111,14 @@ async function run() {
     const inputVersion = getInput('tflint_version');
     const checksums = getMultilineInput('checksums');
     const wrapper = getInput('tflint_wrapper') === 'true';
-    const version = await getTFLintVersion(inputVersion);
     const platform = mapOS(external_os_.platform());
     const arch = mapArch(external_os_.arch());
+    const { version, downloadUrl } = await resolveReleaseTarget({
+      inputVersion,
+      platform,
+      arch,
+      fetchLatestReleaseName,
+    });
     const normalizedVersion = normalizeVersion(version);
 
     // Check if tool is already cached
@@ -100057,9 +100127,8 @@ async function run() {
       info(`Found TFLint ${version} in cache @ ${pathToCLI}`);
     } else {
       core_debug(`Getting download URL for tflint version ${version}: ${platform} ${arch}`);
-      const url = `https://github.com/terraform-linters/tflint/releases/download/${version}/tflint_${platform}_${arch}.zip`;
 
-      pathToCLI = await downloadCLI(url, checksums, version);
+      pathToCLI = await downloadCLI(downloadUrl, checksums, version);
 
       info('Adding to the tool cache...');
       pathToCLI = await cacheDir(pathToCLI, 'tflint', normalizedVersion, arch);
