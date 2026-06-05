@@ -186,8 +186,24 @@ This action supports [Problem Matchers](https://github.com/actions/toolkit/blob/
 
 ## Releasing
 
-To create a new version:
+`master` does not contain the built `dist/` bundle. The
+[`Release`](.github/workflows/release.yml) workflow builds it and attaches it to
+the release tag, so a release happens by publishing a GitHub Release rather than
+by pushing a tag.
+
+Bump the version and push the tag:
 
 ```sh
 npm version $inc && git push --follow-tags
 ```
+
+Then publish a release for the new tag:
+
+```sh
+gh release create "v$(node -p 'require("./package.json").version')" --generate-notes
+```
+
+On publish, the workflow checks out the tagged commit, runs `npm run build`,
+commits `dist/` onto that commit, and force-moves the release tag along with the
+floating `vMAJOR` and `vMAJOR.MINOR` tags to it. Consumers pinning `@v6` are
+unaffected.

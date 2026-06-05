@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build:
-    name: Build checks
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
@@ -25,8 +25,17 @@ jobs:
           ${{ runner.os }}-node-
     - name: Install
       run: npm ci
-    - name: Build & Verify
-      run: npm run build && git diff --exit-code
+    - name: Build
+      run: npm run build
+    # Tar the bundle so the executable bit on the relocated wrapper survives.
+    # actions/upload-artifact does not preserve unix file permissions.
+    - name: Archive dist
+      run: tar -cf dist.tar dist
+    - name: Upload dist
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: dist
+        path: dist.tar
 
   lint:
     runs-on: ubuntu-latest
@@ -65,6 +74,7 @@ jobs:
 
   integration:
     name: Integration test
+    needs: build
 
     strategy:
       matrix:
@@ -76,6 +86,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    - uses: ./.github/actions/dist
     - name: Use Action
       uses: ./
       with:
@@ -85,6 +96,7 @@ jobs:
 
   integration-versions:
     name: 'Integration test: version (tflint_version: ${{ matrix.tflint_version }})'
+    needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -92,6 +104,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    - uses: ./.github/actions/dist
     - name: Use Action
       id: setup-tflint
       uses: ./
@@ -124,9 +137,11 @@ jobs:
   integration-checksum:
     runs-on: ubuntu-latest
     name: 'Integration test: checksum'
+    needs: build
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: ./.github/actions/dist
       - name: Use Action
         uses: ./
         with:
@@ -139,6 +154,7 @@ jobs:
 
   integration-matchers:
     name: 'Integration test: matchers (tflint_version: ${{ matrix.tflint_version }})'
+    needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -146,6 +162,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    - uses: ./.github/actions/dist
     - name: Use Action
       uses: ./
       with:
@@ -156,6 +173,7 @@ jobs:
 
   integration-wrapper:
     name: 'Integration test: wrapper (tflint_version: ${{ matrix.tflint_version }})'
+    needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -163,6 +181,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: ./.github/actions/dist
       - name: Use Action
         id: setup-tflint
         uses: ./
@@ -192,10 +211,12 @@ jobs:
 
   integration-cache:
     name: 'Integration test: cache'
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: ./.github/actions/dist
       - name: Use Action
         uses: ./
         with:
