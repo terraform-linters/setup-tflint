@@ -1,5 +1,3 @@
-import path from 'path';
+import { CLI_PATH_ENV, resolveBinPath } from './tflint-protocol.js';
 
-const pathToCLI = [process.env.TFLINT_CLI_PATH, `tflint-bin`].join(path.sep);
-
-export default pathToCLI;
+export default resolveBinPath(process.env[CLI_PATH_ENV]);

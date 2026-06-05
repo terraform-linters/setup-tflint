@@ -7,6 +7,8 @@ import * as io from '@actions/io';
 import * as tc from '@actions/tool-cache';
 import { Octokit } from '@octokit/rest';
 
+import { BIN_SUFFIX, CLI_PATH_ENV } from '../wrapper/lib/tflint-protocol.js';
+
 import restoreCache from './cache-restore.js';
 import { downloadCLI } from './installer.js';
 import { mapArch, mapOS, normalizeVersion, resolveReleaseTarget } from './release-target.js';
@@ -53,7 +55,7 @@ async function getInstalledVersion() {
 
 async function installWrapper(pathToCLI) {
   // Move the original tflint binary to a new location
-  await io.mv(path.join(pathToCLI, 'tflint'), path.join(pathToCLI, 'tflint-bin'));
+  await io.mv(path.join(pathToCLI, 'tflint'), path.join(pathToCLI, BIN_SUFFIX));
 
   // Copy the wrapper script to the tflint binary location
   await io.cp(
@@ -67,7 +69,7 @@ async function installWrapper(pathToCLI) {
     path.join(pathToCLI, 'package.json'),
   );
 
-  core.exportVariable('TFLINT_CLI_PATH', pathToCLI);
+  core.exportVariable(CLI_PATH_ENV, pathToCLI);
 }
 
 async function run() {
