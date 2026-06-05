@@ -1,0 +1,60 @@
+name: Release
+
+# Builds the bundle that master no longer commits and attaches it to the
+# release. On `release: published` it checks out the released commit, runs the
+# build, commits dist onto that commit, and force-moves the release tag plus the
+# floating major/minor tags (e.g. v6 and v6.2) to the dist-bearing commit.
+#
+# This triggers on release publication, not on tag push, so moving the tags here
+# does not re-trigger the workflow.
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build and tag dist
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        ref: ${{ github.event.release.tag_name }}
+        fetch-depth: 0
+    - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+    - name: Install
+      run: npm ci
+    - name: Build
+      run: npm run build
+    - name: Commit dist and move tags
+      env:
+        TAG: ${{ github.event.release.tag_name }}
+      run: |
+        set -euo pipefail
+        git config user.name 'github-actions[bot]'
+        git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+        # dist is gitignored on master; force-add the freshly built bundle.
+        git add --force dist
+        if git diff --cached --quiet; then
+          echo "dist already up to date; not committing."
+        else
+          git commit -m "Build dist for ${TAG}"
+        fi
+        sha=$(git rev-parse HEAD)
+
+        tags=("${TAG}")
+        if [[ "${TAG}" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+          tags+=("v${BASH_REMATCH[1]}" "v${BASH_REMATCH[1]}.${BASH_REMATCH[2]}")
+        else
+          echo "Tag ${TAG} is not vMAJOR.MINOR.PATCH; only the release tag will move."
+        fi
+
+        for tag in "${tags[@]}"; do
+          git tag -f "${tag}" "${sha}"
+          git push --force origin "refs/tags/${tag}"
+        done
