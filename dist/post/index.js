@@ -92199,7 +92199,7 @@ function lib_glob_hashFiles(patterns_1) {
     });
 }
 //# sourceMappingURL=glob.js.map
-;// CONCATENATED MODULE: ./src/cache-restore.js
+;// CONCATENATED MODULE: ./src/plugin-cache.js
 
 
 
@@ -92210,19 +92210,45 @@ const STATE_CACHE_PRIMARY_KEY = 'TFLINT_CACHE_KEY';
 const STATE_CACHE_MATCHED_KEY = 'TFLINT_CACHE_MATCHED_KEY';
 const STATE_CACHE_PATHS = 'TFLINT_CACHE_PATHS';
 
-async function cache_restore_restoreCache() {
-  const cacheEnabled = core.getInput('cache') === 'true';
-  if (!cacheEnabled) {
+/**
+ * Resolves the directory where TFLint plugins are installed, expanding a leading
+ * `~` to the user's home directory.
+ * @param {string} input - The `plugin_dir` action input.
+ * @param {string|undefined} env - The `TFLINT_PLUGIN_DIR` environment variable.
+ * @param {string} homedir - The user's home directory.
+ * @returns {string} The resolved plugin directory.
+ */
+function resolvePluginDir(input, env, homedir) {
+  return (input || env || '~/.tflint.d/plugins').replace(/^~/, homedir);
+}
+
+/**
+ * Builds the cache key prefix and primary key for the given platform and file hash.
+ * @param {string} platform - The runner OS.
+ * @param {string} fileHash - The hash of the config files.
+ * @returns {{keyPrefix: string, primaryKey: string}} The cache key parts.
+ */
+function cacheKey(platform, fileHash) {
+  const keyPrefix = `tflint-plugins-${platform}`;
+  return { keyPrefix, primaryKey: `${keyPrefix}-${fileHash}` };
+}
+
+function cacheEnabled() {
+  return getInput('cache') === 'true';
+}
+
+async function restore() {
+  if (!cacheEnabled()) {
     core.debug('Cache is not enabled');
     return;
   }
 
   const configPath = core.getInput('tflint_config_path');
-  const pluginDir = (
-    core.getInput('plugin_dir') ||
-    process.env.TFLINT_PLUGIN_DIR ||
-    '~/.tflint.d/plugins'
-  ).replace(/^~/, os.homedir());
+  const pluginDir = resolvePluginDir(
+    core.getInput('plugin_dir'),
+    process.env.TFLINT_PLUGIN_DIR,
+    os.homedir(),
+  );
 
   core.debug(`Resolving config files matching pattern: ${configPath}`);
   const globber = await glob.create(configPath);
@@ -92242,8 +92268,7 @@ async function cache_restore_restoreCache() {
   }
 
   const platform = process.env.RUNNER_OS;
-  const keyPrefix = `tflint-plugins-${platform}`;
-  const primaryKey = `${keyPrefix}-${fileHash}`;
+  const { keyPrefix, primaryKey } = cacheKey(platform, fileHash);
 
   core.debug(`Cache primary key: ${primaryKey}`);
   core.saveState(STATE_CACHE_PRIMARY_KEY, primaryKey);
@@ -92263,18 +92288,8 @@ async function cache_restore_restoreCache() {
   core.info(`TFLint plugin cache restored from key: ${matchedKey}`);
 }
 
-/* harmony default export */ const cache_restore = ((/* unused pure expression or super */ null && (cache_restore_restoreCache)));
-
-
-;// CONCATENATED MODULE: ./src/cache-save.js
-
-
-
-
-
-async function cache_save_saveCache() {
-  const cacheEnabled = getInput('cache') === 'true';
-  if (!cacheEnabled) {
+async function save() {
+  if (!cacheEnabled()) {
     core_debug('Cache is not enabled');
     return;
   }
@@ -92315,7 +92330,12 @@ async function cache_save_saveCache() {
   }
 }
 
-/* harmony default export */ const cache_save = (cache_save_saveCache);
+
+
+;// CONCATENATED MODULE: ./src/cache-save.js
+
+
+/* harmony default export */ const cache_save = (save);
 
 ;// CONCATENATED MODULE: ./post.js
 
