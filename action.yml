@@ -5,6 +5,9 @@ inputs:
     description: TFLint version to install
     required: false
     default: latest
+  tflint_version_file:
+    description: Path to a file containing the TFLint version to install (an asdf/mise `.tool-versions` entry, or a plain version file). Used when `tflint_version` is unset or `latest`.
+    required: false
   github_token:
     description: GitHub token - used when getting the latest version of tflint
     required: false

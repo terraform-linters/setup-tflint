@@ -100053,6 +100053,41 @@ function normalizeVersion(version) {
 }
 
 /**
+ * Ensure a version string is a release tag. TFLint release tags are "v"-prefixed,
+ * so a bare version (e.g. an asdf-style "0.50.0") is coerced to "v0.50.0".
+ * @param {string} version - Version string (e.g., "0.50.0" or "v0.50.0")
+ * @returns {string} - Version with a leading "v"
+ */
+function ensureVersionTag(version) {
+  return /^\d/.test(version) ? `v${version}` : version;
+}
+
+/**
+ * Parse a TFLint version from a version file's contents.
+ *
+ * Supports the asdf/mise `.tool-versions` format (a `tflint <version>` line,
+ * possibly alongside other tools) and a plain version file whose entire
+ * contents are a single version token.
+ * @param {string} contents - Raw version file contents
+ * @returns {string|null} - The parsed version, or null when none is found
+ */
+function parseVersionFile(contents) {
+  // asdf/mise `.tool-versions`: a `tflint <version>` entry.
+  const toolVersionsMatch = contents.match(/^\s*tflint\s+v?(\S+)/m);
+  if (toolVersionsMatch) {
+    return toolVersionsMatch[1];
+  }
+
+  // Plain version file: a single bare version token (optionally "v"-prefixed).
+  const trimmed = contents.trim();
+  if (/^v?\d\S*$/.test(trimmed)) {
+    return trimmed;
+  }
+
+  return null;
+}
+
+/**
  * Get the GitHub platform architecture name
  * @param {string} arch - https://nodejs.org/api/os.html#os_os_arch
  * @returns {string}
@@ -100103,8 +100138,9 @@ async function resolveReleaseTarget({
   arch,
   fetchLatestReleaseName,
 }) {
-  const version =
+  const resolved =
     !inputVersion || inputVersion === 'latest' ? await fetchLatestReleaseName() : inputVersion;
+  const version = ensureVersionTag(resolved);
 
   return {
     version,
@@ -100113,6 +100149,7 @@ async function resolveReleaseTarget({
 }
 
 ;// CONCATENATED MODULE: ./src/setup-tflint.js
+
 
 
 
@@ -100168,6 +100205,46 @@ async function getInstalledVersion() {
   }
 }
 
+/**
+ * Resolve the requested TFLint version, preferring an explicit `tflint_version`
+ * and falling back to a version read from `tflint_version_file` when provided.
+ * @returns {string} - The requested version ("latest", empty, or explicit/file)
+ */
+function resolveRequestedVersion() {
+  const inputVersion = getInput('tflint_version');
+  const versionFile = getInput('tflint_version_file');
+
+  if (!versionFile) {
+    return inputVersion;
+  }
+
+  // An explicit version wins over the file; warn so the file is not silently ignored.
+  if (inputVersion && inputVersion !== 'latest') {
+    warning(
+      'Both tflint_version and tflint_version_file are set; using tflint_version and ignoring tflint_version_file.',
+    );
+
+    return inputVersion;
+  }
+
+  // The path comes from a trusted workflow input, not from untrusted runtime data.
+  const filePath = external_path_.resolve(versionFile);
+  // eslint-disable-next-line security/detect-non-literal-fs-filename
+  if (!external_fs_namespaceObject.existsSync(filePath)) {
+    throw new Error(`tflint_version_file not found: ${versionFile}`);
+  }
+
+  // eslint-disable-next-line security/detect-non-literal-fs-filename
+  const fileVersion = parseVersionFile(external_fs_namespaceObject.readFileSync(filePath, 'utf8'));
+  if (!fileVersion) {
+    throw new Error(`Could not parse a TFLint version from tflint_version_file: ${versionFile}`);
+  }
+
+  info(`Resolved TFLint version ${fileVersion} from ${versionFile}`);
+
+  return fileVersion;
+}
+
 async function installWrapper(pathToCLI) {
   // Move the original tflint binary to a new location
   await mv(external_path_.join(pathToCLI, 'tflint'), external_path_.join(pathToCLI, BIN_SUFFIX));
@@ -100191,7 +100268,7 @@ async function run() {
   try {
     await cache_restore();
 
-    const inputVersion = getInput('tflint_version');
+    const inputVersion = resolveRequestedVersion();
     const checksums = getMultilineInput('checksums');
     const wrapper = getInput('tflint_wrapper') === 'true';
     const platform = mapOS(external_os_.platform());

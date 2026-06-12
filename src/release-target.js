@@ -8,6 +8,41 @@ export function normalizeVersion(version) {
 }
 
 /**
+ * Ensure a version string is a release tag. TFLint release tags are "v"-prefixed,
+ * so a bare version (e.g. an asdf-style "0.50.0") is coerced to "v0.50.0".
+ * @param {string} version - Version string (e.g., "0.50.0" or "v0.50.0")
+ * @returns {string} - Version with a leading "v"
+ */
+export function ensureVersionTag(version) {
+  return /^\d/.test(version) ? `v${version}` : version;
+}
+
+/**
+ * Parse a TFLint version from a version file's contents.
+ *
+ * Supports the asdf/mise `.tool-versions` format (a `tflint <version>` line,
+ * possibly alongside other tools) and a plain version file whose entire
+ * contents are a single version token.
+ * @param {string} contents - Raw version file contents
+ * @returns {string|null} - The parsed version, or null when none is found
+ */
+export function parseVersionFile(contents) {
+  // asdf/mise `.tool-versions`: a `tflint <version>` entry.
+  const toolVersionsMatch = contents.match(/^\s*tflint\s+v?(\S+)/m);
+  if (toolVersionsMatch) {
+    return toolVersionsMatch[1];
+  }
+
+  // Plain version file: a single bare version token (optionally "v"-prefixed).
+  const trimmed = contents.trim();
+  if (/^v?\d\S*$/.test(trimmed)) {
+    return trimmed;
+  }
+
+  return null;
+}
+
+/**
  * Get the GitHub platform architecture name
  * @param {string} arch - https://nodejs.org/api/os.html#os_os_arch
  * @returns {string}
@@ -58,8 +93,9 @@ export async function resolveReleaseTarget({
   arch,
   fetchLatestReleaseName,
 }) {
-  const version =
+  const resolved =
     !inputVersion || inputVersion === 'latest' ? await fetchLatestReleaseName() : inputVersion;
+  const version = ensureVersionTag(resolved);
 
   return {
     version,
