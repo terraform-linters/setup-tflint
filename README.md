@@ -14,6 +14,25 @@ If version is `"latest"`, the action will get the latest version number using [O
 
 Default: `"latest"`
 
+### `tflint_version_file`
+
+Path to a file containing the TFLint version to install, so the version can live alongside your other tooling pins instead of being hardcoded in the workflow.
+
+Two formats are supported:
+
+- An [asdf](https://asdf-vm.com/) / [mise](https://mise.jdx.dev/) `.tool-versions` file — the version is read from its `tflint <version>` line (other tools in the file are ignored).
+- A plain version file whose entire contents are a single version (e.g. `0.52.0` or `v0.52.0`).
+
+The version may be written with or without a leading `v`.
+
+This input is used only when `tflint_version` is unset or `latest`. If `tflint_version` is set to an explicit version, it takes precedence and `tflint_version_file` is ignored.
+
+```yaml
+- uses: terraform-linters/setup-tflint@v6
+  with:
+    tflint_version_file: .tool-versions
+```
+
 ### `checksums`
 
 A newline-delimited list of valid checksums (SHA256 hashes) for the downloaded TFLint binary. When set, the action will verify that the binary matches one of these checksums before proceeding.

@@ -1,3 +1,4 @@
+import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
@@ -11,7 +12,13 @@ import { BIN_SUFFIX, CLI_PATH_ENV } from '../wrapper/lib/tflint-protocol.js';
 
 import restoreCache from './cache-restore.js';
 import { downloadCLI } from './installer.js';
-import { mapArch, mapOS, normalizeVersion, resolveReleaseTarget } from './release-target.js';
+import {
+  mapArch,
+  mapOS,
+  normalizeVersion,
+  parseVersionFile,
+  resolveReleaseTarget,
+} from './release-target.js';
 
 function getOctokit() {
   return new Octokit({
@@ -53,6 +60,46 @@ async function getInstalledVersion() {
   }
 }
 
+/**
+ * Resolve the requested TFLint version, preferring an explicit `tflint_version`
+ * and falling back to a version read from `tflint_version_file` when provided.
+ * @returns {string} - The requested version ("latest", empty, or explicit/file)
+ */
+function resolveRequestedVersion() {
+  const inputVersion = core.getInput('tflint_version');
+  const versionFile = core.getInput('tflint_version_file');
+
+  if (!versionFile) {
+    return inputVersion;
+  }
+
+  // An explicit version wins over the file; warn so the file is not silently ignored.
+  if (inputVersion && inputVersion !== 'latest') {
+    core.warning(
+      'Both tflint_version and tflint_version_file are set; using tflint_version and ignoring tflint_version_file.',
+    );
+
+    return inputVersion;
+  }
+
+  // The path comes from a trusted workflow input, not from untrusted runtime data.
+  const filePath = path.resolve(versionFile);
+  // eslint-disable-next-line security/detect-non-literal-fs-filename
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`tflint_version_file not found: ${versionFile}`);
+  }
+
+  // eslint-disable-next-line security/detect-non-literal-fs-filename
+  const fileVersion = parseVersionFile(fs.readFileSync(filePath, 'utf8'));
+  if (!fileVersion) {
+    throw new Error(`Could not parse a TFLint version from tflint_version_file: ${versionFile}`);
+  }
+
+  core.info(`Resolved TFLint version ${fileVersion} from ${versionFile}`);
+
+  return fileVersion;
+}
+
 async function installWrapper(pathToCLI) {
   // Move the original tflint binary to a new location
   await io.mv(path.join(pathToCLI, 'tflint'), path.join(pathToCLI, BIN_SUFFIX));
@@ -76,7 +123,7 @@ async function run() {
   try {
     await restoreCache();
 
-    const inputVersion = core.getInput('tflint_version');
+    const inputVersion = resolveRequestedVersion();
     const checksums = core.getMultilineInput('checksums');
     const wrapper = core.getInput('tflint_wrapper') === 'true';
     const platform = mapOS(os.platform());

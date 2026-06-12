@@ -137,6 +137,27 @@ jobs:
           checksums: bb0a3a6043ea1bcd221fc95d49bac831bb511eb31946ca6a4050983e9e584578
       - run: tflint -v
 
+  integration-version-file:
+    runs-on: ubuntu-latest
+    name: 'Integration test: version file'
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Use Action
+        id: setup-tflint
+        uses: ./
+        with:
+          tflint_version_file: .github/workflows/fixtures/.tool-versions
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Validate
+        run: tflint -v | grep 0.52.0
+      - name: Verify version output
+        run: |
+          if [[ "${{ steps.setup-tflint.outputs.tflint-version }}" != "0.52.0" ]]; then
+            echo "Expected version output '0.52.0', got '${{ steps.setup-tflint.outputs.tflint-version }}'"
+            exit 1
+          fi
+
   integration-matchers:
     name: 'Integration test: matchers (tflint_version: ${{ matrix.tflint_version }})'
     runs-on: ubuntu-latest
