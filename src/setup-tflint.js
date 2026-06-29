@@ -16,8 +16,8 @@ import {
   mapArch,
   mapOS,
   normalizeVersion,
-  parseVersionFile,
   resolveReleaseTarget,
+  resolveRequestedVersion,
 } from './release-target.js';
 
 function getOctokit() {
@@ -61,43 +61,24 @@ async function getInstalledVersion() {
 }
 
 /**
- * Resolve the requested TFLint version, preferring an explicit `tflint_version`
- * and falling back to a version read from `tflint_version_file` when provided.
+ * Read the requested TFLint version from the action inputs. The version-file
+ * parsing and input-precedence rules live in `resolveRequestedVersion`
+ * (release-target.js) so they can be unit tested; this wrapper only supplies
+ * the Actions-runtime concerns (inputs, path resolution, filesystem, logging).
  * @returns {string} - The requested version ("latest", empty, or explicit/file)
  */
-function resolveRequestedVersion() {
-  const inputVersion = core.getInput('tflint_version');
-  const versionFile = core.getInput('tflint_version_file');
-
-  if (!versionFile) {
-    return inputVersion;
-  }
-
-  // An explicit version wins over the file; warn so the file is not silently ignored.
-  if (inputVersion && inputVersion !== 'latest') {
-    core.warning(
-      'Both tflint_version and tflint_version_file are set; using tflint_version and ignoring tflint_version_file.',
-    );
-
-    return inputVersion;
-  }
-
-  // The path comes from a trusted workflow input, not from untrusted runtime data.
-  const filePath = path.resolve(versionFile);
-  // eslint-disable-next-line security/detect-non-literal-fs-filename
-  if (!fs.existsSync(filePath)) {
-    throw new Error(`tflint_version_file not found: ${versionFile}`);
-  }
-
-  // eslint-disable-next-line security/detect-non-literal-fs-filename
-  const fileVersion = parseVersionFile(fs.readFileSync(filePath, 'utf8'));
-  if (!fileVersion) {
-    throw new Error(`Could not parse a TFLint version from tflint_version_file: ${versionFile}`);
-  }
-
-  core.info(`Resolved TFLint version ${fileVersion} from ${versionFile}`);
-
-  return fileVersion;
+function getRequestedVersion() {
+  return resolveRequestedVersion({
+    inputVersion: core.getInput('tflint_version'),
+    versionFile: core.getInput('tflint_version_file'),
+    // The path comes from a trusted workflow input, not from untrusted runtime data.
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
+    fileExists: (file) => fs.existsSync(path.resolve(file)),
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
+    readFile: (file) => fs.readFileSync(path.resolve(file), 'utf8'),
+    warn: core.warning,
+    info: core.info,
+  });
 }
 
 async function installWrapper(pathToCLI) {
@@ -123,7 +104,7 @@ async function run() {
   try {
     await restoreCache();
 
-    const inputVersion = resolveRequestedVersion();
+    const inputVersion = getRequestedVersion();
     const checksums = core.getMultilineInput('checksums');
     const wrapper = core.getInput('tflint_wrapper') === 'true';
     const platform = mapOS(os.platform());

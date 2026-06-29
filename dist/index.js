@@ -100087,6 +100087,62 @@ function parseVersionFile(contents) {
   return null;
 }
 
+// Default logging sink for resolveRequestedVersion when none is injected.
+function release_target_noop() {
+  // Intentionally does nothing; used when no logger is injected.
+}
+
+/**
+ * Resolve the requested TFLint version from the action inputs, preferring an
+ * explicit `tflint_version` and falling back to a version read from
+ * `tflint_version_file` when one is provided.
+ *
+ * Parsing and the input-precedence rules are kept here (rather than in the
+ * action entrypoint) so they can be unit tested without the Actions runtime.
+ * @param {object} options
+ * @param {string} options.inputVersion - The `tflint_version` input ("latest", empty, or explicit)
+ * @param {string} options.versionFile - The `tflint_version_file` input (a path, or empty)
+ * @param {(path: string) => boolean} options.fileExists - Returns true when the version file exists
+ * @param {(path: string) => string} options.readFile - Reads the version file's contents
+ * @param {(message: string) => void} [options.warn] - Sink for warnings (defaults to no-op)
+ * @param {(message: string) => void} [options.info] - Sink for info messages (defaults to no-op)
+ * @returns {string} - The requested version ("latest", empty, or explicit/file)
+ */
+function resolveRequestedVersion({
+  inputVersion,
+  versionFile,
+  fileExists,
+  readFile,
+  warn = release_target_noop,
+  info = release_target_noop,
+}) {
+  if (!versionFile) {
+    return inputVersion;
+  }
+
+  // An explicit version wins over the file; warn so the file is not silently ignored.
+  if (inputVersion && inputVersion !== 'latest') {
+    warn(
+      'Both tflint_version and tflint_version_file are set; using tflint_version and ignoring tflint_version_file.',
+    );
+
+    return inputVersion;
+  }
+
+  if (!fileExists(versionFile)) {
+    throw new Error(`tflint_version_file not found: ${versionFile}`);
+  }
+
+  const fileVersion = parseVersionFile(readFile(versionFile));
+  if (!fileVersion) {
+    throw new Error(`Could not parse a TFLint version from tflint_version_file: ${versionFile}`);
+  }
+
+  info(`Resolved TFLint version ${fileVersion} from ${versionFile}`);
+
+  return fileVersion;
+}
+
 /**
  * Get the GitHub platform architecture name
  * @param {string} arch - https://nodejs.org/api/os.html#os_os_arch
@@ -100206,43 +100262,24 @@ async function getInstalledVersion() {
 }
 
 /**
- * Resolve the requested TFLint version, preferring an explicit `tflint_version`
- * and falling back to a version read from `tflint_version_file` when provided.
+ * Read the requested TFLint version from the action inputs. The version-file
+ * parsing and input-precedence rules live in `resolveRequestedVersion`
+ * (release-target.js) so they can be unit tested; this wrapper only supplies
+ * the Actions-runtime concerns (inputs, path resolution, filesystem, logging).
  * @returns {string} - The requested version ("latest", empty, or explicit/file)
  */
-function resolveRequestedVersion() {
-  const inputVersion = getInput('tflint_version');
-  const versionFile = getInput('tflint_version_file');
-
-  if (!versionFile) {
-    return inputVersion;
-  }
-
-  // An explicit version wins over the file; warn so the file is not silently ignored.
-  if (inputVersion && inputVersion !== 'latest') {
-    warning(
-      'Both tflint_version and tflint_version_file are set; using tflint_version and ignoring tflint_version_file.',
-    );
-
-    return inputVersion;
-  }
-
-  // The path comes from a trusted workflow input, not from untrusted runtime data.
-  const filePath = external_path_.resolve(versionFile);
-  // eslint-disable-next-line security/detect-non-literal-fs-filename
-  if (!external_fs_namespaceObject.existsSync(filePath)) {
-    throw new Error(`tflint_version_file not found: ${versionFile}`);
-  }
-
-  // eslint-disable-next-line security/detect-non-literal-fs-filename
-  const fileVersion = parseVersionFile(external_fs_namespaceObject.readFileSync(filePath, 'utf8'));
-  if (!fileVersion) {
-    throw new Error(`Could not parse a TFLint version from tflint_version_file: ${versionFile}`);
-  }
-
-  info(`Resolved TFLint version ${fileVersion} from ${versionFile}`);
-
-  return fileVersion;
+function getRequestedVersion() {
+  return resolveRequestedVersion({
+    inputVersion: getInput('tflint_version'),
+    versionFile: getInput('tflint_version_file'),
+    // The path comes from a trusted workflow input, not from untrusted runtime data.
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
+    fileExists: (file) => external_fs_namespaceObject.existsSync(external_path_.resolve(file)),
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
+    readFile: (file) => external_fs_namespaceObject.readFileSync(external_path_.resolve(file), 'utf8'),
+    warn: warning,
+    info: info,
+  });
 }
 
 async function installWrapper(pathToCLI) {
@@ -100268,7 +100305,7 @@ async function run() {
   try {
     await cache_restore();
 
-    const inputVersion = resolveRequestedVersion();
+    const inputVersion = getRequestedVersion();
     const checksums = getMultilineInput('checksums');
     const wrapper = getInput('tflint_wrapper') === 'true';
     const platform = mapOS(external_os_.platform());

@@ -7,6 +7,7 @@ import {
   normalizeVersion,
   parseVersionFile,
   resolveReleaseTarget,
+  resolveRequestedVersion,
 } from './release-target.js';
 
 describe('mapArch', () => {
@@ -71,6 +72,10 @@ describe('parseVersionFile', () => {
     expect(parseVersionFile('terraform 1.9.0\ntflint 0.51.0\nfoo 1.2.3\n')).toBe('0.51.0');
   });
 
+  it('ignores leading whitespace before the tflint entry', () => {
+    expect(parseVersionFile('  tflint 0.53.0\n')).toBe('0.53.0');
+  });
+
   it('reads a plain version file', () => {
     expect(parseVersionFile('0.52.0\n')).toBe('0.52.0');
   });
@@ -79,12 +84,141 @@ describe('parseVersionFile', () => {
     expect(parseVersionFile('v0.52.0\n')).toBe('v0.52.0');
   });
 
+  it('trims surrounding whitespace from a plain version file', () => {
+    expect(parseVersionFile('  \n  0.52.0  \n  \n')).toBe('0.52.0');
+  });
+
+  it('reads a plain version file without a trailing newline', () => {
+    expect(parseVersionFile('0.52.0')).toBe('0.52.0');
+  });
+
+  it('prefers the tflint entry over a leading plain-looking line', () => {
+    expect(parseVersionFile('0.40.0\ntflint 0.52.0\n')).toBe('0.52.0');
+  });
+
   it('returns null for empty contents', () => {
+    expect(parseVersionFile('')).toBeNull();
+  });
+
+  it('returns null for whitespace-only contents', () => {
     expect(parseVersionFile('\n  \n')).toBeNull();
   });
 
   it('returns null when no tflint entry is present', () => {
     expect(parseVersionFile('terraform 1.9.0\n')).toBeNull();
+  });
+
+  it('returns null for a comment-only / non-version plain file', () => {
+    expect(parseVersionFile('# pin tflint here\n')).toBeNull();
+  });
+});
+
+describe('resolveRequestedVersion', () => {
+  const makeReader = (contents) => ({
+    fileExists: jest.fn().mockReturnValue(true),
+    readFile: jest.fn().mockReturnValue(contents),
+  });
+
+  it('returns the explicit version and never touches the filesystem when no file is set', () => {
+    const { fileExists, readFile } = makeReader('tflint 0.52.0\n');
+
+    const result = resolveRequestedVersion({
+      inputVersion: 'v0.50.0',
+      versionFile: '',
+      fileExists,
+      readFile,
+    });
+
+    expect(result).toBe('v0.50.0');
+    expect(fileExists).not.toHaveBeenCalled();
+    expect(readFile).not.toHaveBeenCalled();
+  });
+
+  it('passes through an empty version input when no file is set', () => {
+    const { fileExists, readFile } = makeReader('tflint 0.52.0\n');
+
+    expect(
+      resolveRequestedVersion({ inputVersion: '', versionFile: '', fileExists, readFile }),
+    ).toBe('');
+  });
+
+  it('reads the version from the file when no explicit version is given', () => {
+    const { fileExists, readFile } = makeReader('terraform 1.9.0\ntflint 0.52.0\n');
+    const info = jest.fn();
+
+    const result = resolveRequestedVersion({
+      inputVersion: '',
+      versionFile: '.tool-versions',
+      fileExists,
+      readFile,
+      info,
+    });
+
+    expect(result).toBe('0.52.0');
+    expect(readFile).toHaveBeenCalledWith('.tool-versions');
+    expect(info).toHaveBeenCalledWith('Resolved TFLint version 0.52.0 from .tool-versions');
+  });
+
+  it('reads the version from the file when the explicit version is "latest"', () => {
+    const { fileExists, readFile } = makeReader('0.52.0\n');
+
+    const result = resolveRequestedVersion({
+      inputVersion: 'latest',
+      versionFile: '.tflint-version',
+      fileExists,
+      readFile,
+    });
+
+    expect(result).toBe('0.52.0');
+  });
+
+  it('lets an explicit version win over the file and warns', () => {
+    const { fileExists, readFile } = makeReader('tflint 0.52.0\n');
+    const warn = jest.fn();
+
+    const result = resolveRequestedVersion({
+      inputVersion: 'v0.50.0',
+      versionFile: '.tool-versions',
+      fileExists,
+      readFile,
+      warn,
+    });
+
+    expect(result).toBe('v0.50.0');
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledWith(
+      'Both tflint_version and tflint_version_file are set; using tflint_version and ignoring tflint_version_file.',
+    );
+    expect(fileExists).not.toHaveBeenCalled();
+    expect(readFile).not.toHaveBeenCalled();
+  });
+
+  it('throws when the version file does not exist', () => {
+    const fileExists = jest.fn().mockReturnValue(false);
+    const readFile = jest.fn();
+
+    expect(() =>
+      resolveRequestedVersion({
+        inputVersion: '',
+        versionFile: 'missing.tool-versions',
+        fileExists,
+        readFile,
+      }),
+    ).toThrow('tflint_version_file not found: missing.tool-versions');
+    expect(readFile).not.toHaveBeenCalled();
+  });
+
+  it('throws when the version file cannot be parsed', () => {
+    const { fileExists, readFile } = makeReader('terraform 1.9.0\n');
+
+    expect(() =>
+      resolveRequestedVersion({
+        inputVersion: '',
+        versionFile: '.tool-versions',
+        fileExists,
+        readFile,
+      }),
+    ).toThrow('Could not parse a TFLint version from tflint_version_file: .tool-versions');
   });
 });
 
