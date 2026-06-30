@@ -1,0 +1,14 @@
+name: Download dist
+description: >-
+  Download and extract the action bundle built by the Build job. Restores the
+  executable bit that actions/upload-artifact drops by transporting dist as a
+  tar archive.
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        name: dist
+    - run: tar -xf dist.tar
+      shell: bash
