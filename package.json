@@ -1,6 +1,6 @@
 {
   "name": "setup-tflint-action",
-  "version": "2.1.0",
+  "version": "6.3.1",
   "description": "Install and setup TFLint executable",
   "main": "index.js",
   "engines": {
