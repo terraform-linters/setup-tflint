@@ -1,0 +1,112 @@
+name: Release
+
+# Builds the dist bundle that master no longer commits, tags it, and publishes
+# an immutable GitHub Release.
+#
+# The release is created LAST, against a tag that already contains dist. Once an
+# immutable release is published, GitHub locks its tag to that commit and
+# rejects any later move, so dist must be in place before the release exists.
+# The floating vMAJOR and vMAJOR.MINOR tags carry no release, so they stay
+# movable and are repointed after publishing.
+#
+# The version bump lives on the release tag's build commit, not on master: CI
+# does not push to master. A major/minor/patch increment is computed from the
+# latest release tag.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Explicit version (v6.4.0) or an increment (major/minor/patch)'
+        required: true
+        default: patch
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build, tag, and release
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+    - name: Install
+      run: npm ci
+    - name: Determine version
+      id: version
+      env:
+        INPUT: ${{ inputs.version }}
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        set -euo pipefail
+
+        case "${INPUT}" in
+          major|minor|patch)
+            latest=$(gh release view --json tagName --jq .tagName)
+            if [[ ! "${latest}" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+              echo "Latest release tag '${latest}' is not vMAJOR.MINOR.PATCH."
+              exit 1
+            fi
+            maj=${BASH_REMATCH[1]}; min=${BASH_REMATCH[2]}; pat=${BASH_REMATCH[3]}
+            case "${INPUT}" in
+              major) maj=$((maj + 1)); min=0; pat=0 ;;
+              minor) min=$((min + 1)); pat=0 ;;
+              patch) pat=$((pat + 1)) ;;
+            esac
+            tag="v${maj}.${min}.${pat}"
+            ;;
+          *)
+            tag="v${INPUT#v}"
+            if [[ ! "${tag}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "Version '${INPUT}' must be vMAJOR.MINOR.PATCH or major/minor/patch."
+              exit 1
+            fi
+            ;;
+        esac
+
+        [[ "${tag}" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]
+        {
+          echo "tag=${tag}"
+          echo "major=v${BASH_REMATCH[1]}"
+          echo "minor=v${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
+        } >> "${GITHUB_OUTPUT}"
+    - name: Bump version
+      run: npm version "${{ steps.version.outputs.tag }}" --no-git-tag-version --allow-same-version
+    - name: Build
+      run: npm run build
+    - name: Tag dist and publish release
+      env:
+        TAG: ${{ steps.version.outputs.tag }}
+        MAJOR: ${{ steps.version.outputs.major }}
+        MINOR: ${{ steps.version.outputs.minor }}
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        set -euo pipefail
+
+        git config user.name 'github-actions[bot]'
+        git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+        # dist is gitignored on master; force-add the freshly built bundle and
+        # commit it with the version bump onto the released commit. This commit
+        # lives only under the tags below, never on a branch.
+        git add --force dist
+        git add package.json package-lock.json
+        git commit -m "Release ${TAG}"
+        sha=$(git rev-parse HEAD)
+
+        # Push the release tag so its commit reaches the remote, then publish.
+        # gh release create locks the tag, making the release immutable.
+        git tag "${TAG}" "${sha}"
+        git push origin "refs/tags/${TAG}"
+        gh release create "${TAG}" --generate-notes
+
+        # Repoint the floating tags last. They carry no release, so moving them
+        # is allowed even with immutable releases enabled.
+        for float in "${MAJOR}" "${MINOR}"; do
+          git tag -f "${float}" "${sha}"
+          git push --force origin "refs/tags/${float}"
+        done
