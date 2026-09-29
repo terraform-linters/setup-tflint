@@ -1,3 +1,5 @@
+import semver from 'semver';
+
 /**
  * Normalize version for tool-cache compatibility
  * @param {string} version - Version string (e.g., "v0.50.0" or "0.50.0")
@@ -8,24 +10,20 @@ export function normalizeVersion(version) {
 }
 
 /**
- * Ensure a version string is a release tag. TFLint release tags are "v"-prefixed,
- * so a bare version (e.g. an asdf-style "0.50.0") is coerced to "v0.50.0".
- * @param {string} version - Version string (e.g., "0.50.0" or "v0.50.0")
+ * Convert a semver version to a TFLint release tag, coercing "0.50.0" to "v0.50.0".
+ * The tag is interpolated into the download URL path, so anything that isn't
+ * semver (e.g. "../" or "%2e%2e/") is rejected rather than allowed to redirect
+ * the download to another repository.
+ * @param {string} version - Version string (e.g., "0.50.0" or "v0.50.0-rc.1")
  * @returns {string} - Version with a leading "v"
  */
-export function ensureVersionTag(version) {
-  return /^\d/.test(version) ? `v${version}` : version;
-}
+export function toReleaseTag(version) {
+  const parsed = semver.valid(version);
+  if (!parsed) {
+    throw new Error(`Invalid TFLint version "${version}": expected a release like v0.50.0`);
+  }
 
-/**
- * Check that a version is a plain MAJOR.MINOR.PATCH release, optionally "v"-prefixed.
- * The version is interpolated into the download URL path, so anything looser
- * (e.g. "../" or "%2e%2e/") could redirect the download to another repository.
- * @param {string} version - Version string (e.g., "0.50.0" or "v0.50.0")
- * @returns {boolean}
- */
-export function isValidVersion(version) {
-  return /^v?\d+\.\d+\.\d+$/.test(version);
+  return `v${parsed}`;
 }
 
 /**
@@ -162,12 +160,7 @@ export async function resolveReleaseTarget({
 }) {
   const resolved =
     !inputVersion || inputVersion === 'latest' ? await fetchLatestReleaseName() : inputVersion;
-
-  if (!isValidVersion(resolved)) {
-    throw new Error(`Invalid TFLint version "${resolved}": expected a release like v0.50.0`);
-  }
-
-  const version = ensureVersionTag(resolved);
+  const version = toReleaseTag(resolved);
 
   return {
     version,

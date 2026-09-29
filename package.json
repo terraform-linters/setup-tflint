@@ -43,7 +43,8 @@
     "@actions/io": "^3.0.2",
     "@actions/tool-cache": "^4.0.0",
     "@octokit/rest": "^22.0.1",
-    "process": "^0.11.10"
+    "process": "^0.11.10",
+    "semver": "^7.8.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.6",
