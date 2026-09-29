@@ -2,6 +2,7 @@ import { jest } from '@jest/globals';
 
 import {
   ensureVersionTag,
+  isValidVersion,
   mapArch,
   mapOS,
   normalizeVersion,
@@ -56,6 +57,27 @@ describe('ensureVersionTag', () => {
 
   it('leaves "latest" unchanged', () => {
     expect(ensureVersionTag('latest')).toBe('latest');
+  });
+});
+
+describe('isValidVersion', () => {
+  it.each(['0.50.0', 'v0.50.0', 'v1.10.123'])('accepts %s', (version) => {
+    expect(isValidVersion(version)).toBe(true);
+  });
+
+  it.each([
+    '',
+    'latest',
+    'v0.50',
+    'v0.50.0-rc1',
+    'v0.50.0/',
+    ' v0.50.0',
+    'v0.50.0\n',
+    '../../../../attacker/repo/releases/download/v1/evil.zip#',
+    '%2e%2e/%2e%2e/%2e%2e/%2e%2e/attacker/repo/releases/download/v1/evil.zip#',
+    'v0.50.0/../../../../attacker/repo/releases/download/v1/evil.zip#',
+  ])('rejects %j', (version) => {
+    expect(isValidVersion(version)).toBe(false);
   });
 });
 
@@ -291,5 +313,48 @@ describe('resolveReleaseTarget', () => {
     expect(result.downloadUrl).toBe(
       'https://github.com/terraform-linters/tflint/releases/download/v0.50.0/tflint_linux_amd64.zip',
     );
+  });
+
+  it.each([
+    '../../../../attacker/repo/releases/download/v1/evil.zip#',
+    '%2e%2e/%2e%2e/%2e%2e/%2e%2e/attacker/repo/releases/download/v1/evil.zip#',
+  ])('rejects an explicit version that escapes the release path: %s', async (inputVersion) => {
+    await expect(
+      resolveReleaseTarget({
+        inputVersion,
+        platform: 'linux',
+        arch: 'amd64',
+        fetchLatestReleaseName: jest.fn(),
+      }),
+    ).rejects.toThrow('Invalid TFLint version');
+  });
+
+  it('rejects a version read from a version file that escapes the release path', async () => {
+    const inputVersion = resolveRequestedVersion({
+      inputVersion: '',
+      versionFile: '.tool-versions',
+      fileExists: () => true,
+      readFile: () => 'tflint ../../../../attacker/repo/releases/download/v1/evil.zip#\n',
+    });
+
+    await expect(
+      resolveReleaseTarget({
+        inputVersion,
+        platform: 'linux',
+        arch: 'amd64',
+        fetchLatestReleaseName: jest.fn(),
+      }),
+    ).rejects.toThrow('Invalid TFLint version');
+  });
+
+  it('rejects a malformed latest release name', async () => {
+    await expect(
+      resolveReleaseTarget({
+        inputVersion: 'latest',
+        platform: 'linux',
+        arch: 'amd64',
+        fetchLatestReleaseName: jest.fn().mockResolvedValue('TFLint v0.51.0'),
+      }),
+    ).rejects.toThrow('Invalid TFLint version');
   });
 });

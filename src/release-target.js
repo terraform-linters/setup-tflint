@@ -18,6 +18,17 @@ export function ensureVersionTag(version) {
 }
 
 /**
+ * Check that a version is a plain MAJOR.MINOR.PATCH release, optionally "v"-prefixed.
+ * The version is interpolated into the download URL path, so anything looser
+ * (e.g. "../" or "%2e%2e/") could redirect the download to another repository.
+ * @param {string} version - Version string (e.g., "0.50.0" or "v0.50.0")
+ * @returns {boolean}
+ */
+export function isValidVersion(version) {
+  return /^v?\d+\.\d+\.\d+$/.test(version);
+}
+
+/**
  * Parse a TFLint version from a version file's contents.
  *
  * Supports the asdf/mise `.tool-versions` format (a `tflint <version>` line,
@@ -151,6 +162,11 @@ export async function resolveReleaseTarget({
 }) {
   const resolved =
     !inputVersion || inputVersion === 'latest' ? await fetchLatestReleaseName() : inputVersion;
+
+  if (!isValidVersion(resolved)) {
+    throw new Error(`Invalid TFLint version "${resolved}": expected a release like v0.50.0`);
+  }
+
   const version = ensureVersionTag(resolved);
 
   return {
