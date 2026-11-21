@@ -15,9 +15,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-    - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-    - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+    - uses: actions/checkout@v7.0.1
+    - uses: actions/setup-node@v7.1.0
+    - uses: actions/cache@v6.1.0
       with:
         path: ~/.npm
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -32,7 +32,7 @@ jobs:
     - name: Archive dist
       run: tar -cf dist.tar dist
     - name: Upload dist
-      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      uses: actions/upload-artifact@v7.0.1
       with:
         name: dist
         path: dist.tar
@@ -40,9 +40,9 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-    - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-    - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+    - uses: actions/checkout@v7.0.1
+    - uses: actions/setup-node@v7.1.0
+    - uses: actions/cache@v6.1.0
       with:
 
         path: ~/.npm
@@ -57,9 +57,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-    - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-    - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+    - uses: actions/checkout@v7.0.1
+    - uses: actions/setup-node@v7.1.0
+    - uses: actions/cache@v6.1.0
       with:
         path: ~/.npm
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -85,8 +85,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-    - uses: ./.github/actions/dist
+    - uses: actions/checkout@v7.0.1
+    - uses: $/.github/actions/dist
     - name: Use Action
       uses: ./
       with:
@@ -103,8 +103,8 @@ jobs:
         tflint_version: ['v0.24.1', latest]
 
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-    - uses: ./.github/actions/dist
+    - uses: actions/checkout@v7.0.1
+    - uses: $/.github/actions/dist
     - name: Use Action
       id: setup-tflint
       uses: ./
@@ -140,8 +140,8 @@ jobs:
     needs: build
 
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: ./.github/actions/dist
+      - uses: actions/checkout@v7.0.1
+      - uses: $/.github/actions/dist
       - name: Use Action
         uses: ./
         with:
@@ -158,8 +158,8 @@ jobs:
     needs: build
 
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: ./.github/actions/dist
+      - uses: actions/checkout@v7.0.1
+      - uses: $/.github/actions/dist
       - name: Write version file
         run: |
           cat > .tool-versions <<'EOF'
@@ -190,8 +190,8 @@ jobs:
         tflint_version: ['v0.26.0', latest]
 
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-    - uses: ./.github/actions/dist
+    - uses: actions/checkout@v7.0.1
+    - uses: $/.github/actions/dist
     - name: Use Action
       uses: ./
       with:
@@ -209,8 +209,8 @@ jobs:
         tflint_version: [ 'v0.26.0', latest ]
 
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: ./.github/actions/dist
+      - uses: actions/checkout@v7.0.1
+      - uses: $/.github/actions/dist
       - name: Use Action
         id: setup-tflint
         uses: ./
@@ -244,8 +244,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: ./.github/actions/dist
+      - uses: actions/checkout@v7.0.1
+      - uses: $/.github/actions/dist
       - name: Use Action
         uses: ./
         with:

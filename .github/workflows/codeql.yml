@@ -20,9 +20,9 @@ jobs:
     permissions:
       security-events: write
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-    - uses: github/codeql-action/init@9792ccaef0455e446c567163589397e8c3ac2e0d # v3
+    - uses: actions/checkout@v7.0.1
+    - uses: github/codeql-action/init@v3.32.6
       with:
         languages: javascript
         config-file: ./.github/codeql/codeql-config.yml
-    - uses: github/codeql-action/analyze@9792ccaef0455e446c567163589397e8c3ac2e0d # v3
+    - uses: github/codeql-action/analyze@v3.32.6
