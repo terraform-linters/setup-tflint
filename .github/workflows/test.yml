@@ -86,7 +86,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-    - uses: ./.github/actions/dist
+    - uses: $/.github/actions/dist
     - name: Use Action
       uses: ./
       with:
@@ -104,7 +104,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-    - uses: ./.github/actions/dist
+    - uses: $/.github/actions/dist
     - name: Use Action
       id: setup-tflint
       uses: ./
@@ -141,7 +141,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: ./.github/actions/dist
+      - uses: $/.github/actions/dist
       - name: Use Action
         uses: ./
         with:
@@ -159,7 +159,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: ./.github/actions/dist
+      - uses: $/.github/actions/dist
       - name: Write version file
         run: |
           cat > .tool-versions <<'EOF'
@@ -191,7 +191,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-    - uses: ./.github/actions/dist
+    - uses: $/.github/actions/dist
     - name: Use Action
       uses: ./
       with:
@@ -210,7 +210,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: ./.github/actions/dist
+      - uses: $/.github/actions/dist
       - name: Use Action
         id: setup-tflint
         uses: ./
@@ -245,7 +245,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: ./.github/actions/dist
+      - uses: $/.github/actions/dist
       - name: Use Action
         uses: ./
         with:
